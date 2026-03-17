@@ -1,0 +1,27 @@
+Overview
+This project is a website that focuses on Star Wars attractions located in every Disneyland park around the world. The goal is to make it easy for users to explore parks, learn about attractions, and share their own experiences
+
+Home Page Concept
+The main page will display a globe interface, similar to Google Earth
+Each Disneyland park will appear as a clickable point on the globe
+Clicking a park will zoom in and take the user to that park’s dedicated page
+
+Park Pages
+Each park page will include
+A list of all Star Wars attractions in that specific park
+Basic details such as descriptions, photos, and general information
+A layout inspired by Yelp, focusing on user reviews and ratings
+
+User Accounts
+Users will be able to:
+Create an account
+Log in to write reviews
+Rate attractions and leave comments
+View reviews written by other users
+
+Reviews System
+Each attraction will have its own review section
+Users can write about what they liked, disliked, or recommend
+Reviews will show the username, rating, and date posted
+
+Optional Future Features
