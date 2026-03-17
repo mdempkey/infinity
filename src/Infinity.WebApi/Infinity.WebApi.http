@@ -1,0 +1,49 @@
+###
+
+# Strings - reverse: simple
+GET {{HostAddress}}/strings/reverse/hello
+Accept: application/json
+
+###
+
+# Strings - reverse: palindrome
+GET {{HostAddress}}/strings/reverse/racecar
+Accept: application/json
+
+###
+
+# Strings - reverse: with space
+GET {{HostAddress}}/strings/reverse/hello%20world
+Accept: application/json
+
+###
+
+# Strings - reverse: with double space
+GET {{HostAddress}}/strings/reverse/hello%20%20world
+Accept: application/json
+
+###
+
+# Strings - reverse: leading space
+GET {{HostAddress}}/strings/reverse/%20hello%20world
+Accept: application/json
+
+###
+
+# Strings - reverse: trailing space
+GET {{HostAddress}}/strings/reverse/hello%20world%20
+Accept: application/json
+
+###
+
+# Users - Get all
+GET {{HostAddress}}/api/users
+Accept: application/json
+
+###
+
+# Users - Get by ID
+GET {{HostAddress}}/api/users/1
+Accept: application/json
+
+###
