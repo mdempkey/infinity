@@ -9,9 +9,9 @@ namespace Infinity.WebApi.Controllers;
 public class MockParksController : ControllerBase, IParksController
 {
     private List<Park> parks;
-    private Park parkOne = new Park { Id = "1", Name = "ParkOne", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0};
-    private Park parkTwo = new Park { Id = "2", Name = "ParkTwo", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0 };
-    private Park parkThree = new Park { Id = "3", Name = "ParkThree", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0 };
+    private Park parkOne = new Park { Id = Guid.NewGuid(), Name = "ParkOne", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0};
+    private Park parkTwo = new Park { Id = Guid.NewGuid(), Name = "ParkTwo", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0 };
+    private Park parkThree = new Park { Id = Guid.NewGuid(), Name = "ParkThree", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0 };
 
     public MockParksController()
     {
@@ -30,7 +30,7 @@ public class MockParksController : ControllerBase, IParksController
     [HttpGet("park/{id}")]
     public async Task<ActionResult<Park>> GetPark(string id)
     {
-        var park = parks.Find(park => park.Id == id);
+        var park = parks.Find(park => park.Id.ToString() == id);
 
         if (park == null)
         {
@@ -50,10 +50,10 @@ public class MockParksController : ControllerBase, IParksController
     [HttpPut("park/{id}")]
     public async Task<IActionResult> EditPark(string id, Park park)
     {
-        if (id != park.Id)
+        if (id != park.Id.ToString())
             return BadRequest();
 
-        int parkIndex = parks.FindIndex(p => p.Id == id);
+        int parkIndex = parks.FindIndex(p => p.Id.ToString() == id);
         if (parkIndex != -1)
             parks[parkIndex] = park;
         else
@@ -65,7 +65,7 @@ public class MockParksController : ControllerBase, IParksController
     [HttpDelete("park/{id}")]
     public async Task<IActionResult> DeletePark(string id)
     {
-        var park = parks.Find(p => p.Id == id);
+        var park = parks.Find(p => p.Id.ToString() == id);
         if (park == null)
             return NotFound();
 
