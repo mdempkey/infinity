@@ -16,13 +16,13 @@ public class ParksController : ControllerBase, IParksController
         _context = context;
     }
 
-    [HttpGet("parks")]
+    [HttpGet("")]
     public async Task<ActionResult<IEnumerable<Park>>> GetParks()
     {
         return await _context.Parks.ToListAsync();
     }
 
-    [HttpGet("park/{id}")]
+    [HttpGet("{id}")]
     public async Task<ActionResult<Park>> GetPark(string id)
     {
         var park = await _context.Parks.FindAsync(id);
@@ -35,7 +35,7 @@ public class ParksController : ControllerBase, IParksController
         return park;
     }
 
-    [HttpPost("park")]
+    [HttpPost("")]
     public async Task<ActionResult<Park>> AddPark(Park park)
     {
         _context.Parks.Add(park);
@@ -43,7 +43,7 @@ public class ParksController : ControllerBase, IParksController
         return CreatedAtAction(nameof(GetPark), new { id = park.Id }, park);
     }
 
-    [HttpPut("park/{id}")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> EditPark(string id, Park park)
     {
         if (id != park.Id.ToString()) return BadRequest();
@@ -63,7 +63,7 @@ public class ParksController : ControllerBase, IParksController
         return NoContent();
     }
 
-    [HttpDelete("park/{id}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePark(string id)
     {
         var park = await _context.Parks.FindAsync(id);

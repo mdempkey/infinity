@@ -1,9 +1,11 @@
+using System.Text.Json.Serialization;
+
 namespace Infinity.WebApi.Models;
 
 public class Attraction
 {
     public Guid Id { get; set; }
-    public string ParkId { get; set; } = string.Empty;
+    public Guid ParkId { get; set; } = Guid.Empty;
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     public decimal? Lat { get; set; }
@@ -24,6 +26,9 @@ public class Attraction
     public DateTime CreatedAt { get; set; }
 
     // Navigation
+    [JsonIgnore]
     public Park Park { get; set; } = null!;
+
+    [JsonIgnore]
     public ICollection<AttractionCategory> AttractionCategories { get; set; } = [];
 }
