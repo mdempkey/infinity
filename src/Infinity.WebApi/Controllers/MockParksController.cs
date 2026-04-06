@@ -9,9 +9,9 @@ namespace Infinity.WebApi.Controllers;
 public class MockParksController : ControllerBase, IParksController
 {
     private List<Park> parks;
-    private Park parkOne = new Park { Id = Guid.NewGuid(), Name = "ParkOne", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0};
-    private Park parkTwo = new Park { Id = Guid.NewGuid(), Name = "ParkTwo", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0 };
-    private Park parkThree = new Park { Id = Guid.NewGuid(), Name = "ParkThree", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0 };
+    private Park parkOne = new Park { Id = "park_mock_1", Name = "ParkOne", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0};
+    private Park parkTwo = new Park { Id = "park_mock_2", Name = "ParkTwo", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0 };
+    private Park parkThree = new Park { Id = "park_mock_3", Name = "ParkThree", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0 };
 
     public MockParksController()
     {
