@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Infinity.WebApi.Models;
 
 public class Attraction
