@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Wars Attractions</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="navbar">
+    <nav class="nav-links">
+        <a href="#" onclick="showLoginModal()">Log In</a>
+        <a href="#" onclick="showLoginModal()">Sign Up</a>
+    </nav>
+</header>
+
+<main>
+    <section id="home-page" class="view-page active">
+        <div class="hero">
+            <h1>STAR WARS</h1>
+            <h2>Galactic Attractions</h2>
+            <p>Explore Attractions from Disney Parks around the world</p>
+
+            <div class="map-container">
+                <div class="image-placeholder map-globe">
+                    <span>[Globe Image Placeholder]</span>
+                    <div class="marker ca-marker" onclick="navigateTo('disneyland-page')"></div>
+                    <div class="marker paris-marker" onclick="navigateTo('paris-page')"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="disneyland-page" class="view-page">
+        <div class="park-header">
+            <button class="back-btn" onclick="navigateTo('home-page')">← Back</button>
+            <h1>Disneyland Resort</h1>
+            <p>Anaheim, California</p>
+        </div>
+
+        <div class="attraction-list">
+            <div class="attraction-card">
+                <h2>Star Wars: Galaxy's Edge</h2>
+                <p>Explore Attractions from Disney Parks around the world</p>
+                <div class="image-placeholder attraction-img"><span>[Galaxy's Edge Image]</span></div>
+
+                <div class="review-prompt">
+                    <p>Please log in to leave a review</p>
+                    <button class="yellow-btn" onclick="showLoginModal()">Log In / Sign Up</button>
+                </div>
+            </div>
+
+            <div class="attraction-card">
+                <h2>Star Wars: Rise of the Resistance</h2>
+                <p>RIDE: Epic battle between the Resistance and the First Order</p>
+                <div class="image-placeholder attraction-img"><span>[Rise of the Resistance Image]</span></div>
+
+                <div class="review-prompt">
+                    <p>Please log in to leave a review</p>
+                    <button class="yellow-btn" onclick="showLoginModal()">Log In / Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="paris-page" class="view-page">
+        <div class="park-header">
+            <button class="back-btn" onclick="navigateTo('home-page')">← Back</button>
+            <h1>Disneyland Paris</h1>
+            <p>Marne-la-Vallée, France</p>
+        </div>
+
+        <div class="attraction-list">
+            <div class="attraction-card">
+                <h2>Star Tours: The Adventures Continue</h2>
+                <p>3D motion simulator space flight</p>
+                <div class="image-placeholder attraction-img"><span>[Star Tours Image]</span></div>
+
+                <div class="review-prompt">
+                    <p>Please log in to leave a review</p>
+                    <button class="yellow-btn" onclick="showLoginModal()">Log In / Sign Up</button>
+                </div>
+            </div>
+
+            <div class="attraction-card">
+                <h2>Hyperspace Mountain</h2>
+                <p>High-speed indoor roller coaster</p>
+                <div class="image-placeholder attraction-img"><span>[Hyperspace Mountain Image]</span></div>
+
+                <div class="review-prompt">
+                    <p>Please log in to leave a review</p>
+                    <button class="yellow-btn" onclick="showLoginModal()">Log In / Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div id="login-modal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close-btn" onclick="hideLoginModal()">&times;</span>
+        <h2>Welcome to Star Wars Attractions</h2>
+        <p>Log In</p>
+        <form onsubmit="event.preventDefault(); hideLoginModal();">
+            <input type="email" placeholder="Email" class="form-input" required>
+            <input type="password" placeholder="Password" class="form-input" required>
+            <button type="submit" class="yellow-btn full-width">Log In</button>
+        </form>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
