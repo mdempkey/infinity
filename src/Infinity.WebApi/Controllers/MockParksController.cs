@@ -50,10 +50,10 @@ public class MockParksController : ControllerBase, IParksController
     [HttpPut("{id}")]
     public async Task<IActionResult> EditPark(string id, Park park)
     {
-        if (id != park.Id.ToString())
+        if (id != park.Id)
             return BadRequest();
 
-        int parkIndex = parks.FindIndex(p => p.Id.ToString() == id);
+        int parkIndex = parks.FindIndex(p => p.Id == id);
         if (parkIndex != -1)
             parks[parkIndex] = park;
         else
@@ -65,7 +65,7 @@ public class MockParksController : ControllerBase, IParksController
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePark(string id)
     {
-        var park = parks.Find(p => p.Id.ToString() == id);
+        var park = parks.Find(p => p.Id == id);
         if (park == null)
             return NotFound();
 

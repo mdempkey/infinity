@@ -9,9 +9,9 @@ namespace Infinity.WebApi.Controllers;
 public class MockAttractionsController : ControllerBase, IAttractionsController
 {
     private List<Attraction> attractions;
-    private Attraction attractionOne = new Attraction { Id = Guid.NewGuid(), ParkId = Guid.Parse("1"), Name = "AttractionOne", Description = "Test", Lat = 0, Lng = 0};
-    private Attraction attractionTwo = new Attraction { Id = Guid.NewGuid(), ParkId = Guid.Parse("1"), Name = "AttractionTwo", Description = "Test", Lat = 0, Lng = 0 };
-    private Attraction attractionThree = new Attraction { Id = Guid.NewGuid(), ParkId = Guid.Parse("1"), Name = "AttractionThree", Description = "Test", Lat = 0, Lng = 0 };
+    private Attraction attractionOne = new Attraction { Id = "1", ParkId = "1", Name = "AttractionOne", Description = "Test", Lat = 0, Lng = 0};
+    private Attraction attractionTwo = new Attraction { Id = "2", ParkId = "1", Name = "AttractionTwo", Description = "Test", Lat = 0, Lng = 0 };
+    private Attraction attractionThree = new Attraction { Id = "3", ParkId = "1", Name = "AttractionThree", Description = "Test", Lat = 0, Lng = 0 };
 
     public MockAttractionsController()
     {
@@ -30,7 +30,7 @@ public class MockAttractionsController : ControllerBase, IAttractionsController
     [HttpGet("{id}")]
     public async Task<ActionResult<Attraction>> GetAttraction(string id)
     {
-        var attraction = attractions.Find(attraction => attraction.Id.ToString() == id);
+        var attraction = attractions.Find(attraction => attraction.Id == id);
 
         if (attraction == null)
         {
@@ -50,10 +50,10 @@ public class MockAttractionsController : ControllerBase, IAttractionsController
     [HttpPut("{id}")]
     public async Task<IActionResult> EditAttraction(string id, Attraction attraction)
     {
-        if (id != attraction.Id.ToString())
+        if (id != attraction.Id)
             return BadRequest();
 
-        int attractionIndex = attractions.FindIndex(attr => attr.Id.ToString() == id);
+        int attractionIndex = attractions.FindIndex(attr => attr.Id == id);
         if (attractionIndex != -1)
             attractions[attractionIndex] = attraction;
         else
@@ -65,7 +65,7 @@ public class MockAttractionsController : ControllerBase, IAttractionsController
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAttraction(string id)
     {
-        var attraction = attractions.Find(attr => attr.Id.ToString() == id);
+        var attraction = attractions.Find(attr => attr.Id == id);
         if (attraction == null)
             return NotFound();
 

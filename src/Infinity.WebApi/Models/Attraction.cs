@@ -4,8 +4,8 @@ namespace Infinity.WebApi.Models;
 
 public class Attraction
 {
-    public Guid Id { get; set; }
-    public Guid ParkId { get; set; } = Guid.Empty;
+    public string Id { get; set; }
+    public string ParkId { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     public decimal? Lat { get; set; }

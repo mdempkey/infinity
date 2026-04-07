@@ -46,7 +46,7 @@ public class ParksController : ControllerBase, IParksController
     [HttpPut("{id}")]
     public async Task<IActionResult> EditPark(string id, Park park)
     {
-        if (id != park.Id.ToString()) return BadRequest();
+        if (id != park.Id) return BadRequest();
 
         _context.Entry(park).State = EntityState.Modified;
 
@@ -56,7 +56,7 @@ public class ParksController : ControllerBase, IParksController
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!_context.Parks.Any(u => u.Id.ToString() == id)) return NotFound();
+            if (!_context.Parks.Any(u => u.Id == id)) return NotFound();
             throw;
         }
 

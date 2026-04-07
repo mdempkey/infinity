@@ -11,9 +11,6 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<LocationsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddDbContext<LocationsDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("LocationsConnection")));
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
