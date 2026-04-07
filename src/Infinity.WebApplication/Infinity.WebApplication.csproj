@@ -4,7 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <RootNamespace>WebApplication2</RootNamespace>
+        <RootNamespace>Infinity.WebApplication</RootNamespace>
     </PropertyGroup>
 
 </Project>
