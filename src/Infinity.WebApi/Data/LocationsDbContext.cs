@@ -21,7 +21,8 @@ public class LocationsDbContext : DbContext
         {
             e.ToTable("parks");
             e.HasKey(p => p.Id);
-            e.Property(p => p.Id).HasColumnName("id").HasColumnType("varchar(20)");
+            e.Property(p => p.Id).HasColumnName("id").HasColumnType("uuid")
+                .HasDefaultValueSql("gen_random_uuid()");
             e.Property(p => p.Name).HasColumnName("name").HasColumnType("varchar(255)").IsRequired();
             e.Property(p => p.Resort).HasColumnName("resort").HasColumnType("varchar(255)");
             e.Property(p => p.City).HasColumnName("city").HasColumnType("varchar(100)");
@@ -49,7 +50,7 @@ public class LocationsDbContext : DbContext
             e.HasKey(a => a.Id);
             e.Property(a => a.Id).HasColumnName("id").HasColumnType("uuid")
                 .HasDefaultValueSql("gen_random_uuid()");
-            e.Property(a => a.ParkId).HasColumnName("park_id").HasColumnType("varchar(20)").IsRequired();
+            e.Property(a => a.ParkId).HasColumnName("park_id").HasColumnType("uuid").IsRequired();
             e.Property(a => a.Name).HasColumnName("name").HasColumnType("varchar(255)").IsRequired();
             e.Property(a => a.Description).HasColumnName("description").HasColumnType("text");
             e.Property(a => a.Lat).HasColumnName("lat").HasColumnType("decimal(9,6)");

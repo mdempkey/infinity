@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Infinity.WebApi.Models;
 
 public class Park
@@ -10,5 +12,6 @@ public class Park
     public decimal? Lat { get; set; }
     public decimal? Lng { get; set; }
 
+    [JsonIgnore]
     public ICollection<Attraction> Attractions { get; set; } = [];
 }
