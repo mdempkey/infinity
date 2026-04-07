@@ -7,6 +7,8 @@ jobs:
   podman-compose:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      PODMAN_COMPOSE_PROVIDER: podman-compose
     defaults:
       run:
         working-directory: src
@@ -29,7 +31,9 @@ jobs:
           sudo apt-get install -y podman podman-compose
 
       - name: Show Podman version
-        run: podman --version
+        run: |
+          podman --version
+          podman-compose --version
 
       - name: Build containers
         run: podman compose -f compose.yaml build
