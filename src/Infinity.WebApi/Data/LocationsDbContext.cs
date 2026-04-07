@@ -21,7 +21,7 @@ public class LocationsDbContext : DbContext
         {
             e.ToTable("parks");
             e.HasKey(p => p.Id);
-            e.Property(p => p.Id).HasColumnName("id").HasColumnType("varchar(20)");
+            e.Property(p => p.Id).HasColumnName("id").HasColumnType("varchar(50)").IsRequired();
             e.Property(p => p.Name).HasColumnName("name").HasColumnType("varchar(255)").IsRequired();
             e.Property(p => p.Resort).HasColumnName("resort").HasColumnType("varchar(255)");
             e.Property(p => p.City).HasColumnName("city").HasColumnType("varchar(100)");
@@ -35,8 +35,7 @@ public class LocationsDbContext : DbContext
         {
             e.ToTable("categories");
             e.HasKey(c => c.Id);
-            e.Property(c => c.Id).HasColumnName("id").HasColumnType("uuid")
-                .HasDefaultValueSql("gen_random_uuid()");
+            e.Property(c => c.Id).HasColumnName("id").HasColumnType("varchar(50)").IsRequired();
             e.Property(c => c.Name).HasColumnName("name").HasColumnType("varchar(50)").IsRequired();
             e.HasIndex(c => c.Name).IsUnique();
             e.Property(c => c.Description).HasColumnName("description").HasColumnType("text");
@@ -47,9 +46,8 @@ public class LocationsDbContext : DbContext
         {
             e.ToTable("attractions");
             e.HasKey(a => a.Id);
-            e.Property(a => a.Id).HasColumnName("id").HasColumnType("uuid")
-                .HasDefaultValueSql("gen_random_uuid()");
-            e.Property(a => a.ParkId).HasColumnName("park_id").HasColumnType("varchar(20)").IsRequired();
+            e.Property(a => a.Id).HasColumnName("id").HasColumnType("varchar(50)").IsRequired();
+            e.Property(a => a.ParkId).HasColumnName("park_id").HasColumnType("varchar(50)").IsRequired();
             e.Property(a => a.Name).HasColumnName("name").HasColumnType("varchar(255)").IsRequired();
             e.Property(a => a.Description).HasColumnName("description").HasColumnType("text");
             e.Property(a => a.Lat).HasColumnName("lat").HasColumnType("decimal(9,6)");

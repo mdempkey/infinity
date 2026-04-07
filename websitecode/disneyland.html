@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disneyland | Star Wars Attractions</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="navbar" style="justify-content: flex-end;">
+    <nav class="nav-links">
+        <div id="logged-out-nav">
+            <a href="#" onclick="showLoginModal()">Log In</a>
+            <a href="#" onclick="showLoginModal()">Sign Up</a>
+        </div>
+        <div id="logged-in-nav" style="display: none; align-items: center; gap: 15px;">
+            <span>Welcome, Jedi! 🟢</span>
+            <a href="#" onclick="handleLogout()" style="color: #ff4444;">Log Out</a>
+        </div>
+    </nav>
+</header>
+
+<main class="park-detail-page active">
+    <a href="index.html" class="back-btn" style="text-decoration:none; display:inline-block;">← Back</a>
+
+    <div class="park-header">
+        <h1>Disneyland Resort</h1>
+        <p>Anaheim, California</p>
+    </div>
+
+    <div class="attraction-list">
+        <div class="attraction-card">
+            <h2>Star Wars: Galaxy's Edge</h2>
+            <div class="star-rating">★★★★★ 5.0</div>
+            <div class="image-placeholder attraction-img"><span>[Galaxy's Edge Image]</span></div>
+
+            <div class="review-prompt logged-out-view">
+                <p>Please log in to leave a review</p>
+                <button class="yellow-btn" onclick="showLoginModal()">Log In / Sign Up</button>
+            </div>
+            <div class="review-form logged-in-view" style="display: none;">
+                <textarea placeholder="Write your review here..."></textarea>
+                <button class="yellow-btn" onclick="alert('Review submitted!')">Post Review</button>
+            </div>
+
+            <div class="reviews-section">
+                <h3>Reviews (1):</h3>
+                <div class="review-item">
+                    <div class="reviewer-info"><span class="avatar">🟡</span> <strong>Rey Jakku</strong></div>
+                    <p>The level of detail in this land is unmatched!!! You really feel like you're on Batuu!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="attraction-card">
+            <h2>Star Wars: Rise of the Resistance</h2>
+            <div class="star-rating">★★★★★ 4.9</div>
+            <div class="image-placeholder attraction-img"><span>[Rise of the Resistance Image]</span></div>
+
+            <div class="review-prompt logged-out-view">
+                <p>Please log in to leave a review</p>
+                <button class="yellow-btn" onclick="showLoginModal()">Log In / Sign Up</button>
+            </div>
+            <div class="review-form logged-in-view" style="display: none;">
+                <textarea placeholder="Write your review here..."></textarea>
+                <button class="yellow-btn" onclick="alert('Review submitted!')">Post Review</button>
+            </div>
+
+            <div class="reviews-section">
+                <h3>Reviews (2):</h3>
+                <div class="review-item">
+                    <div class="reviewer-info"><span class="avatar">🔴</span> <strong>Leia Organa</strong></div>
+                    <p>This ride is a masterpiece. The trackless system and the story are perfectly executed.</p>
+                </div>
+                <div class="review-item">
+                    <div class="reviewer-info"><span class="avatar">🟢</span> <strong>Luke Skywalker</strong></div>
+                    <p>Absolutely mind blowing!!! The most immersive ride I've ever experienced. The scale and detail are incredible.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div id="login-modal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close-btn" onclick="hideLoginModal()">&times;</span>
+        <h2>Welcome to Star Wars Attractions</h2>
+        <p style="margin-bottom: 20px;">Log In / Sign Up</p>
+        <form onsubmit="event.preventDefault(); handleLogin();">
+            <input type="email" placeholder="Email" class="form-input" required>
+            <input type="password" placeholder="Password" class="form-input" required>
+            <button type="submit" class="yellow-btn full-width" style="margin-top: 10px;">Continue</button>
+        </form>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

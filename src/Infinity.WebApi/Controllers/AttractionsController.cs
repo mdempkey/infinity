@@ -16,13 +16,13 @@ public class AttractionsController : ControllerBase, IAttractionsController
         _context = context;
     }
 
-    [HttpGet("attractions")]
+    [HttpGet("")]
     public async Task<ActionResult<IEnumerable<Attraction>>> GetAttractions()
     {
         return await _context.Attractions.ToListAsync();
     }
 
-    [HttpGet("attraction/{id}")]
+    [HttpGet("{id}")]
     public async Task<ActionResult<Attraction>> GetAttraction(string id)
     {
         var attraction = await _context.Attractions.FindAsync(id);
@@ -35,7 +35,7 @@ public class AttractionsController : ControllerBase, IAttractionsController
         return attraction;
     }
 
-    [HttpPost("attraction")]
+    [HttpPost("")]
     public async Task<ActionResult<Attraction>> AddAttraction(Attraction attraction)
     {
         _context.Attractions.Add(attraction);
@@ -43,10 +43,10 @@ public class AttractionsController : ControllerBase, IAttractionsController
         return CreatedAtAction(nameof(GetAttraction), new { id = attraction.Id }, attraction);
     }
 
-    [HttpPut("attraction/{id}")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> EditAttraction(string id, Attraction attraction)
     {
-        if (id != attraction.Id.ToString()) return BadRequest();
+        if (id != attraction.Id) return BadRequest();
 
         _context.Entry(attraction).State = EntityState.Modified;
 
@@ -56,14 +56,14 @@ public class AttractionsController : ControllerBase, IAttractionsController
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!_context.Attractions.Any(u => u.Id.ToString() == id)) return NotFound();
+            if (!_context.Attractions.Any(u => u.Id == id)) return NotFound();
             throw;
         }
 
         return NoContent();
     }
 
-    [HttpDelete("attraction/{id}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAttraction(string id)
     {
         var attraction = await _context.Attractions.FindAsync(id);

@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore;
 namespace Infinity.WebApi.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/mock/[controller]")]
 public class MockParksController : ControllerBase, IParksController
 {
     private List<Park> parks;
-    private Park parkOne = new Park { Id = Guid.NewGuid(), Name = "ParkOne", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0};
-    private Park parkTwo = new Park { Id = Guid.NewGuid(), Name = "ParkTwo", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0 };
-    private Park parkThree = new Park { Id = Guid.NewGuid(), Name = "ParkThree", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0 };
+    private Park parkOne = new Park { Id = "park_mock_1", Name = "ParkOne", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0};
+    private Park parkTwo = new Park { Id = "park_mock_2", Name = "ParkTwo", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0 };
+    private Park parkThree = new Park { Id = "park_mock_3", Name = "ParkThree", Resort = "TestResort", City = "TestCity", Country = "TestCountry", Lat = 0, Lng = 0 };
 
     public MockParksController()
     {
@@ -21,13 +21,13 @@ public class MockParksController : ControllerBase, IParksController
         parks.Add(parkThree);
     }
     
-    [HttpGet("parks")]
+    [HttpGet("")]
     public async Task<ActionResult<IEnumerable<Park>>> GetParks()
     {
         return parks;
     }
 
-    [HttpGet("park/{id}")]
+    [HttpGet("{id}")]
     public async Task<ActionResult<Park>> GetPark(string id)
     {
         var park = parks.Find(park => park.Id.ToString() == id);
@@ -40,20 +40,20 @@ public class MockParksController : ControllerBase, IParksController
         return park;
     }
 
-    [HttpPost("park")]
+    [HttpPost("")]
     public async Task<ActionResult<Park>> AddPark(Park park)
     {
         parks.Add(park);
         return CreatedAtAction(nameof(GetPark), new { id = park.Id }, park);
     }
 
-    [HttpPut("park/{id}")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> EditPark(string id, Park park)
     {
-        if (id != park.Id.ToString())
+        if (id != park.Id)
             return BadRequest();
 
-        int parkIndex = parks.FindIndex(p => p.Id.ToString() == id);
+        int parkIndex = parks.FindIndex(p => p.Id == id);
         if (parkIndex != -1)
             parks[parkIndex] = park;
         else
@@ -62,10 +62,10 @@ public class MockParksController : ControllerBase, IParksController
         return NoContent();
     }
 
-    [HttpDelete("park/{id}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePark(string id)
     {
-        var park = parks.Find(p => p.Id.ToString() == id);
+        var park = parks.Find(p => p.Id == id);
         if (park == null)
             return NotFound();
 

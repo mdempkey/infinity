@@ -31,7 +31,7 @@ These apply to _all endpoints_:
 
 ---
 # Park Endpoint
-## GET `/park/{id}`
+## GET `/Parks/{id}`
 ### Success
 ```json
 {
@@ -56,7 +56,7 @@ These apply to _all endpoints_:
 500 Internal Server Error
 ```
 # Attraction Endpoint
-## GET `/attraction/{id}`
+## GET `/Attractions/{id}`
 ### Success
 ```json
 {
@@ -87,7 +87,7 @@ These apply to _all endpoints_:
 500 Internal Server Error
 ```
 # Image Endpoint
-## GET `/attraction/image/{name}`
+## GET `/Attractions/image/{id}`
 ### Success
 ```json
 (jpeg binary image data)
@@ -104,7 +104,7 @@ These apply to _all endpoints_:
 500 Internal Server Error
 ```
 # List Park IDs
-## GET `/parks`
+## GET `/Parks`
 ### Query Parameters
 ```
 limit: integer (default 50, max 200)  
@@ -133,7 +133,7 @@ updatedAfter: timestamp (optional)
 500 Internal Server Error
 ```
 # List Attraction IDs
-## GET `/attractions`
+## GET `/Attractions`
 ### Query Parameters
 ```
 limit: integer (default 50, max 200)  
