@@ -30,11 +30,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y podman podman-compose
 
-      - name: Show Podman version
-        run: |
-          podman --version
-          podman-compose --version
-
       - name: Build containers
         run: podman compose -f compose.yaml build
 
@@ -69,6 +64,9 @@ jobs:
             podman compose -f compose.yaml logs
             exit 1
           fi
+
+      - name: Build website
+        run: dotnet build Infinity.WebApplication/Infinity.WebApplication.csproj --configuration Release
 
       - name: Print logs on failure
         if: failure()
