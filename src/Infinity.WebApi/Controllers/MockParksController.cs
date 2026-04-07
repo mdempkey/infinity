@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Infinity.WebApi.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/mock/[controller]")]
 public class MockParksController : ControllerBase, IParksController
 {
     private List<Park> parks;
@@ -21,13 +21,13 @@ public class MockParksController : ControllerBase, IParksController
         parks.Add(parkThree);
     }
     
-    [HttpGet("parks")]
+    [HttpGet("")]
     public async Task<ActionResult<IEnumerable<Park>>> GetParks()
     {
         return parks;
     }
 
-    [HttpGet("park/{id}")]
+    [HttpGet("{id}")]
     public async Task<ActionResult<Park>> GetPark(string id)
     {
         var park = parks.Find(park => park.Id.ToString() == id);
@@ -40,14 +40,14 @@ public class MockParksController : ControllerBase, IParksController
         return park;
     }
 
-    [HttpPost("park")]
+    [HttpPost("")]
     public async Task<ActionResult<Park>> AddPark(Park park)
     {
         parks.Add(park);
         return CreatedAtAction(nameof(GetPark), new { id = park.Id }, park);
     }
 
-    [HttpPut("park/{id}")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> EditPark(string id, Park park)
     {
         if (id != park.Id)
@@ -62,7 +62,7 @@ public class MockParksController : ControllerBase, IParksController
         return NoContent();
     }
 
-    [HttpDelete("park/{id}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePark(string id)
     {
         var park = parks.Find(p => p.Id == id);

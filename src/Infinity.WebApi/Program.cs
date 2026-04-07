@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Infinity.WebApi.Data;
-using Infinity.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,9 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
-builder.Services.AddScoped<IStringService, StringService>();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<LocationsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
@@ -19,7 +17,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var db = scope.ServiceProvider.GetRequiredService<LocationsDbContext>();
     await db.Database.EnsureCreatedAsync();
     
     app.MapOpenApi();
