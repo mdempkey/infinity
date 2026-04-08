@@ -2,34 +2,28 @@
     ViewData["Title"] = "Star Wars Attractions";
 }
 
-<section class="hero-section">
-    <div class="hero">
-        <p class="eyebrow">Explore Attractions from Disney Parks around the world</p>
-        <h1>STAR WARS</h1>
-        <h2>Galactic Attractions</h2>
+<section class="home-page">
+    <partial name="_HomepageGlobe" />
+    <div class="home-page__scrim"></div>
+    <button type="button" class="home-page__reset" onclick="resetHomepageGlobe()">Back to Parks</button>
 
-        <div class="map-container">
-            <div class="image-placeholder map-globe" aria-label="Park map">
-                <span>[Globe Image Placeholder]</span>
-                <a class="marker ca-marker" asp-controller="Home" asp-action="Disneyland" aria-label="Disneyland Resort"></a>
-                <a class="marker paris-marker" asp-controller="Home" asp-action="DisneylandParis" aria-label="Disneyland Paris"></a>
-            </div>
-        </div>
+    <div class="home-page__content">
+        <section class="home-hero">
+            <section class="location-panel">
+                <article class="attraction-card location-card">
+                    <h3>Disneyland Resort</h3>
+                    <p>Anaheim, California</p>
+                    <p>Galaxy's Edge and Rise of the Resistance.</p>
+                    <button type="button" class="yellow-btn inline-btn" onclick="focusHomepagePark('disneyland')">Focus Park</button>
+                </article>
+
+                <article class="attraction-card location-card">
+                    <h3>Disneyland Paris</h3>
+                    <p>Marne-la-Vallee, France</p>
+                    <p>Star Tours and Hyperspace Mountain.</p>
+                    <button type="button" class="yellow-btn inline-btn" onclick="focusHomepagePark('disneyland-paris')">Focus Park</button>
+                </article>
+            </section>
+        </section>
     </div>
-
-    <section class="park-previews">
-        <article class="attraction-card">
-            <h3>Disneyland Resort</h3>
-            <p>Anaheim, California</p>
-            <p>Galaxy's Edge and Rise of the Resistance.</p>
-            <a class="yellow-btn inline-btn" asp-controller="Home" asp-action="Disneyland">View Park</a>
-        </article>
-
-        <article class="attraction-card">
-            <h3>Disneyland Paris</h3>
-            <p>Marne-la-Vallee, France</p>
-            <p>Star Tours and Hyperspace Mountain.</p>
-            <a class="yellow-btn inline-btn" asp-controller="Home" asp-action="DisneylandParis">View Park</a>
-        </article>
-    </section>
 </section>
