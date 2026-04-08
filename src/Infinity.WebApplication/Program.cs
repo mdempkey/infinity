@@ -1,6 +1,9 @@
+using Infinity.WebApplication.Services.Home;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IHomePageContentService, HomePageContentService>();
 
 var app = builder.Build();
 

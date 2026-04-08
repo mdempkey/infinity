@@ -79,7 +79,7 @@
         .nav-link-button {
             background: transparent;
             border: none;
-            color: #ffffff;
+            color: #c7cedb;
             cursor: pointer;
             font-size: 0.95rem;
         }
@@ -162,7 +162,10 @@
             border: 2px solid #10131d;
             border-radius: 999px;
             background: #ffcc00;
-            box-shadow: 0 0 0 8px rgba(255, 204, 0, 0.16);
+            box-shadow:
+                0 0 10px rgba(255, 204, 0, 0.75),
+                0 0 22px rgba(255, 204, 0, 0.45),
+                0 0 40px rgba(255, 204, 0, 0.2);
             cursor: pointer;
         }
 
@@ -184,10 +187,17 @@
             border-radius: 999px;
             border: 1px solid rgba(255, 255, 255, 0.12);
             background: rgba(12, 17, 28, 0.78);
-            color: #ffffff;
+            color: #c7cedb;
             line-height: 1;
             backdrop-filter: blur(10px);
             cursor: pointer;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .home-page__reset:hover,
+        .home-page__reset:focus-visible {
+            border-color: rgba(255, 204, 0, 0.75);
+            transform: translateY(-1px);
         }
 
         .home-page.is-park-focused .home-page__reset {
@@ -227,6 +237,7 @@
 
         h3 {
             font-size: 1.1rem;
+            color: #ffcc00;
         }
 
         p {
@@ -257,6 +268,7 @@
             gap: 18px;
             justify-items: stretch;
             max-height: 100%;
+            padding-top: 10px;
             overflow-y: scroll;
             scrollbar-width: none;
             overscroll-behavior: contain;
@@ -264,8 +276,20 @@
             pointer-events: auto;
         }
 
+        .attraction-panel {
+            display: none;
+        }
+
         .home-page.is-park-focused .location-panel {
             overflow: hidden;
+        }
+
+        .home-page.is-park-focused .location-panel--parks {
+            display: none;
+        }
+
+        .home-page.is-park-focused .attraction-panel {
+            display: grid;
         }
 
         .home-page.is-park-focused .homepage-globe .mapboxgl-canvas-container,
@@ -279,9 +303,20 @@
             display: none;
         }
 
-        .location-card {
-            background: rgba(12, 17, 28, 0.82);
-            backdrop-filter: blur(10px);
+        .attraction-summary + .attraction-summary {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .attraction-summary h4 {
+            font-size: 1rem;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .attraction-summary p {
+            font-size: 0.9rem;
         }
 
         .attraction-card {
@@ -289,7 +324,22 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 24px;
             border-radius: 20px;
-            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .location-card--clickable {
+            cursor: pointer;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .location-card--clickable:hover,
+        .location-card--clickable:focus-visible {
+            border-color: #ffcc00;
+            transform: translateY(-1px);
+        }
+
+        .location-card--clickable:focus-visible {
+            outline: 2px solid #ffcc00;
+            outline-offset: 2px;
         }
 
         .inline-btn {

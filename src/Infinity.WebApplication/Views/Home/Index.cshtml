@@ -1,3 +1,4 @@
+@model Infinity.WebApplication.ViewModels.Home.HomeIndexViewModel
 @{
     ViewData["Title"] = "Star Wars Attractions";
 }
@@ -9,20 +10,23 @@
 
     <div class="home-page__content">
         <section class="home-hero">
-            <section class="location-panel">
-                <article class="attraction-card location-card">
-                    <h3>Disneyland Resort</h3>
-                    <p>Anaheim, California</p>
-                    <p>Galaxy's Edge and Rise of the Resistance.</p>
-                    <button type="button" class="yellow-btn inline-btn" onclick="focusHomepagePark('disneyland')">Focus Park</button>
-                </article>
+            <section class="location-panel location-panel--parks">
+                @foreach (var park in Model.Parks)
+                {
+                    <article class="attraction-card location-card location-card--clickable"
+                             role="button"
+                             tabindex="0"
+                             aria-label="Focus @park.Title on map"
+                             onclick="focusHomepagePark('@park.Id')"
+                             onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); focusHomepagePark('@park.Id'); }">
+                        <h3>@park.Title</h3>
+                        <p>@park.City, @park.Country</p>
+                    </article>
+                }
+            </section>
 
-                <article class="attraction-card location-card">
-                    <h3>Disneyland Paris</h3>
-                    <p>Marne-la-Vallee, France</p>
-                    <p>Star Tours and Hyperspace Mountain.</p>
-                    <button type="button" class="yellow-btn inline-btn" onclick="focusHomepagePark('disneyland-paris')">Focus Park</button>
-                </article>
+            <section class="location-panel attraction-panel" id="attraction-panel">
+                <div id="attraction-panel-list"></div>
             </section>
         </section>
     </div>

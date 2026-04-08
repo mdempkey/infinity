@@ -1,8 +1,32 @@
-@using System.Text.Encodings.Web
-@inject IConfiguration Configuration
+@model Infinity.WebApplication.ViewModels.Home.HomeIndexViewModel
+@using System.Text.Json
 @{
-    var accessToken = Configuration["Mapbox:AccessToken"] ?? string.Empty;
+    var globeConfigJson = JsonSerializer.Serialize(new
+    {
+        accessToken = Model.MapboxAccessToken,
+        globe = new
+        {
+            initialCenter = new[] { Model.Globe.InitialCenter.Lng, Model.Globe.InitialCenter.Lat },
+            initialZoom = Model.Globe.InitialZoom,
+            focusedZoom = Model.Globe.FocusedZoom
+        },
+        parks = Model.Parks.Select(park => new
+        {
+            id = park.Id,
+            title = park.Title,
+            location = park.City,
+            country = park.Country,
+            coordinates = new[] { park.Coordinates.Lng, park.Coordinates.Lat },
+            attractions = park.Attractions.Select(attraction => new
+            {
+                title = attraction.Title,
+                subtitle = attraction.Subtitle,
+                coordinates = new[] { attraction.Coordinates.Lng, attraction.Coordinates.Lat }
+            })
+        })
+    });
 }
+
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.css" rel="stylesheet">
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.js"></script>
 
@@ -13,209 +37,5 @@
     </div>
 </div>
 
-<script>
-    (() => {
-        const accessToken = "@JavaScriptEncoder.Default.Encode(accessToken)";
-        const mount = document.getElementById("homepage-globe");
-        const wrapper = mount?.parentElement;
-        const homePage = document.querySelector(".home-page");
-        const locationPanel = document.querySelector(".location-panel");
-        if (!mount || !wrapper) {
-            return;
-        }
-
-        function initHomepageGlobe() {
-            if (!window.mapboxgl) {
-                return;
-            }
-
-            mapboxgl.accessToken = accessToken;
-
-            const initialZoom = 1.55;
-            const focusedZoom = 15.3;
-            const initialCenter = [20, 15];
-            const map = new mapboxgl.Map({
-                container: mount,
-                style: "mapbox://styles/mapbox/standard-satellite",
-                projection: "globe",
-                center: initialCenter,
-                zoom: initialZoom,
-                minZoom: initialZoom,
-                maxZoom: focusedZoom,
-                dragRotate: false,
-                dragPan: true,
-                doubleClickZoom: false,
-                scrollZoom: false,
-                boxZoom: false,
-                keyboard: false,
-                touchZoomRotate: true,
-                attributionControl: false,
-                pitchWithRotate: false,
-                config: {
-                    basemap: {
-                        showPedestrianRoads: false,
-                        showPlaceLabels: false,
-                        showPointOfInterestLabels: false,
-                        showRoadLabels: false,
-                        showTransitLabels: false,
-                        showAdminBoundaries: false,
-                        showRoadsAndTransit: false
-                    }
-                },
-            });
-
-            let hasLoaded = false;
-            let readyTimeout = null;
-            let readyCheckBound = false;
-
-            const showFallback = () => {
-                if (!hasLoaded) {
-                    wrapper.classList.remove("is-ready");
-                    wrapper.classList.add("is-fallback");
-                }
-            };
-
-            readyTimeout = window.setTimeout(() => {
-                showFallback();
-            }, 6000);
-
-            const markReadyIfLoaded = () => {
-                const tilesReady = typeof map.areTilesLoaded === "function" ? map.areTilesLoaded() : false;
-                const styleReady = typeof map.isStyleLoaded === "function" ? map.isStyleLoaded() : false;
-
-                if (!styleReady || !tilesReady) {
-                    return;
-                }
-
-                hasLoaded = true;
-                if (readyTimeout) {
-                    window.clearTimeout(readyTimeout);
-                    readyTimeout = null;
-                }
-
-                wrapper.classList.remove("is-fallback");
-                wrapper.classList.add("is-ready");
-                map.off("render", markReadyIfLoaded);
-            };
-
-            map.on("error", (event) => {
-                showFallback();
-            });
-
-            map.on("style.load", () => {
-                if (!readyCheckBound) {
-                    readyCheckBound = true;
-                    map.on("render", markReadyIfLoaded);
-                }
-            });
-
-            const parks = [
-                {
-                    id: "disneyland",
-                    coordinates: [-117.9190, 33.8121],
-                    title: "Disneyland Resort"
-                },
-                {
-                    id: "disneyland-paris",
-                    coordinates: [2.7758, 48.8722],
-                    title: "Disneyland Paris"
-                }
-            ];
-
-            const setFocusedState = (focused) => {
-                homePage?.classList.toggle("is-park-focused", focused);
-
-                if (locationPanel) {
-                    if (focused) {
-                        locationPanel.scrollTop = 0;
-                    }
-                    locationPanel.style.overflowY = focused ? "hidden" : "scroll";
-                }
-
-                if (focused) {
-                    map.dragPan.disable();
-                    map.touchZoomRotate.disable();
-                } else {
-                    map.dragPan.enable();
-                    map.touchZoomRotate.enable();
-                }
-            };
-
-            const focusPark = (parkId) => {
-                const park = parks.find((entry) => entry.id === parkId);
-                if (!park) {
-                    return;
-                }
-
-                setFocusedState(true);
-                map.flyTo({
-                    center: park.coordinates,
-                    zoom: focusedZoom,
-                    duration: 6000,
-                    essential: true
-                });
-            };
-
-            const resetGlobe = () => {
-                setFocusedState(false);
-                map.flyTo({
-                    center: initialCenter,
-                    zoom: initialZoom,
-                    duration: 6000,
-                    essential: true
-                });
-            };
-
-            window.focusHomepagePark = focusPark;
-            window.resetHomepageGlobe = resetGlobe;
-
-            parks.forEach((park) => {
-                const markerElement = document.createElement("button");
-                markerElement.type = "button";
-                markerElement.className = "homepage-globe__marker";
-                markerElement.setAttribute("aria-label", park.title);
-
-                markerElement.addEventListener("click", () => {
-                    focusPark(park.id);
-                });
-
-                new mapboxgl.Marker({ element: markerElement, anchor: "center" })
-                    .setLngLat(park.coordinates)
-                    .addTo(map);
-            });
-
-            setFocusedState(false);
-        }
-
-        if (!accessToken) {
-            wrapper.classList.add("is-fallback");
-            return;
-        }
-
-        if (window.mapboxgl) {
-            initHomepageGlobe();
-            return;
-        }
-
-        if (!document.getElementById("mapbox-gl-css")) {
-            const stylesheet = document.createElement("link");
-            stylesheet.id = "mapbox-gl-css";
-            stylesheet.rel = "stylesheet";
-            stylesheet.href = "https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css";
-            document.head.appendChild(stylesheet);
-        }
-
-        if (!document.getElementById("mapbox-gl-sdk")) {
-            const script = document.createElement("script");
-            script.id = "mapbox-gl-sdk";
-            script.async = true;
-            script.defer = true;
-            script.src = "https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js";
-            script.addEventListener("load", initHomepageGlobe, { once: true });
-            script.addEventListener("error", () => {
-                wrapper.classList.add("is-fallback");
-            }, { once: true });
-            document.head.appendChild(script);
-        }
-    })();
-</script>
+<script id="homepage-globe-config" type="application/json">@Html.Raw(globeConfigJson)</script>
+<partial name="_HomepageGlobeScript" />
