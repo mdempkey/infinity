@@ -1,4 +1,4 @@
-@model Infinity.WebApplication.ViewModels.Home.HomeIndexViewModel
+@model Infinity.WebApplication.ViewModels.Home.IndexViewModel
 @using System.Text.Json
 @{
     var globeConfigJson = JsonSerializer.Serialize(new
@@ -21,7 +21,14 @@
             {
                 title = attraction.Title,
                 subtitle = attraction.Subtitle,
-                coordinates = new[] { attraction.Coordinates.Lng, attraction.Coordinates.Lat }
+                rating = attraction.Rating,
+                coordinates = new[] { attraction.Coordinates.Lng, attraction.Coordinates.Lat },
+                reviews = attraction.Reviews.Select(review => new
+                {
+                    author = review.Author,
+                    date = review.Date,
+                    comment = review.Comment
+                })
             })
         })
     });
@@ -38,4 +45,4 @@
 </div>
 
 <script id="homepage-globe-config" type="application/json">@Html.Raw(globeConfigJson)</script>
-<partial name="_HomepageGlobeScript" />
+<partial name="_GlobeScript" />

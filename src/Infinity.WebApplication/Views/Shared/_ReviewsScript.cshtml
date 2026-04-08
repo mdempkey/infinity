@@ -1,0 +1,30 @@
+<script>
+    (() => {
+        const escapeHtml = (value) => String(value ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll("\"", "&quot;")
+            .replaceAll("'", "&#39;");
+
+        const renderReviews = (reviews) => {
+            if (!Array.isArray(reviews) || reviews.length === 0) {
+                return `<p class="attraction-widget__reviews-empty">No reviews yet. Be the first to leave a review.</p>`;
+            }
+
+            return reviews
+                .map((review) => `
+                    <article class="attraction-widget__review">
+                        <div class="attraction-widget__review-meta">
+                            <strong>${escapeHtml(review.author)}</strong>
+                            <span>${escapeHtml(review.date)}</span>
+                        </div>
+                        <p class="attraction-widget__review-comment">${escapeHtml(review.comment)}</p>
+                    </article>
+                `)
+                .join("");
+        };
+
+        window.renderHomepageAttractionReviews = renderReviews;
+    })();
+</script>

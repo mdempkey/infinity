@@ -1,0 +1,21 @@
+<section class="attraction-widget__reviews" aria-label="Reviews">
+    <h3 class="attraction-widget__reviews-title">Reviews</h3>
+    <div id="attraction-widget-reviews-list"></div>
+
+    @if (User?.Identity?.IsAuthenticated ?? false)
+    {
+        <form class="attraction-widget__review-composer" novalidate>
+            <label class="attraction-widget__review-label" for="attraction-widget-review-input">Add your review</label>
+            <textarea id="attraction-widget-review-input"
+                      class="attraction-widget__review-input"
+                      rows="4"
+                      maxlength="1200"
+                      placeholder="Share your experience..."></textarea>
+            <button type="button" class="yellow-btn attraction-widget__review-submit">Submit Review</button>
+        </form>
+    }
+    else
+    {
+        <p class="attraction-widget__review-note">You must be signed in to leave a review.</p>
+    }
+</section>

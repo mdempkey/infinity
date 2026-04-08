@@ -5,16 +5,16 @@ namespace Infinity.WebApplication.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly IHomePageContentService _homePageContentService;
+    private readonly IIndexContentService _indexContentService;
 
-    public HomeController(IHomePageContentService homePageContentService)
+    public HomeController(IIndexContentService indexContentService)
     {
-        _homePageContentService = homePageContentService;
+        _indexContentService = indexContentService;
     }
 
     public IActionResult Index()
     {
-        return View(_homePageContentService.BuildHomeIndexViewModel());
+        return View(_indexContentService.BuildIndexViewModel());
     }
 
     public IActionResult Disneyland()

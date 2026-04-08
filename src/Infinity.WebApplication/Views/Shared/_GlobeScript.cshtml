@@ -110,19 +110,40 @@
 
             const parkMarkers = [];
             let attractionMarkers = [];
+            let focusedPark = null;
+            const resetZoomThreshold = 0.01;
+            const resetCenterThreshold = 0.02;
 
             const clearAttractionMarkers = () => {
                 attractionMarkers.forEach((marker) => marker.remove());
                 attractionMarkers = [];
             };
 
+            const escapeHtml = (value) => value
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll("\"", "&quot;")
+                .replaceAll("'", "&#39;");
+
             const addAttractionMarkers = (park) => {
                 clearAttractionMarkers();
 
                 (park.attractions ?? []).forEach((attraction) => {
-                    const markerElement = document.createElement("div");
+                    const markerElement = document.createElement("button");
+                    markerElement.type = "button";
                     markerElement.className = "homepage-globe__marker";
-                    markerElement.setAttribute("aria-hidden", "true");
+                    markerElement.setAttribute("aria-label", attraction.title);
+                    markerElement.addEventListener("click", () => {
+                        window.openHomepageAttractionWidget?.({
+                            parkTitle: park.title,
+                            parkLocation: `${park.location}, ${park.country}`,
+                            attractionTitle: attraction.title,
+                            attractionSubtitle: attraction.subtitle,
+                            attractionRating: attraction.rating,
+                            attractionReviews: attraction.reviews
+                        });
+                    });
 
                     const marker = new mapboxgl.Marker({ element: markerElement, anchor: "center" })
                         .setLngLat(attraction.coordinates)
@@ -139,19 +160,84 @@
                 }
 
                 attractionPanelList.innerHTML = (park.attractions ?? [])
-                    .map((attraction) => `
-                        <article class="attraction-card location-card attraction-summary">
-                            <h3>${attraction.title}</h3>
-                            <p>${attraction.subtitle}</p>
+                    .map((attraction, index) => `
+                        <article class="attraction-card location-card attraction-summary attraction-summary--clickable"
+                                 role="button"
+                                 tabindex="0"
+                                 data-attraction-index="${index}"
+                                 aria-label="View details for ${escapeHtml(attraction.title)}">
+                            <h3>${escapeHtml(attraction.title)}</h3>
+                            ${window.renderHomepageStarRating?.(attraction.rating) ?? ""}
+                            <p>${escapeHtml(attraction.subtitle)}</p>
                         </article>
                     `)
                     .join("");
+            };
+
+            const bindAttractionPanelInteractions = () => {
+                if (!homePage) {
+                    return;
+                }
+
+                const activateAttractionFromEvent = (targetNode) => {
+                    const targetElement = targetNode instanceof Element
+                        ? targetNode
+                        : targetNode instanceof Node
+                            ? targetNode.parentElement
+                            : null;
+                    if (!targetElement) {
+                        return;
+                    }
+
+                    const card = targetElement.closest("[data-attraction-index]");
+                    if (!card || !focusedPark) {
+                        return;
+                    }
+
+                    const index = Number(card.getAttribute("data-attraction-index"));
+                    if (!Number.isInteger(index)) {
+                        return;
+                    }
+
+                    const attraction = focusedPark.attractions?.[index];
+                    if (!attraction) {
+                        return;
+                    }
+
+                    window.openHomepageAttractionWidget?.({
+                        parkTitle: focusedPark.title,
+                        parkLocation: `${focusedPark.location}, ${focusedPark.country}`,
+                        attractionTitle: attraction.title,
+                        attractionSubtitle: attraction.subtitle,
+                        attractionRating: attraction.rating,
+                        attractionReviews: attraction.reviews
+                    });
+                };
+
+                homePage.addEventListener("click", (event) => {
+                    activateAttractionFromEvent(event.target);
+                });
+
+                homePage.addEventListener("keydown", (event) => {
+                    if (event.key !== "Enter" && event.key !== " ") {
+                        return;
+                    }
+
+                    const target = event.target;
+                    if (!(target instanceof Element)) {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    activateAttractionFromEvent(target);
+                });
             };
 
             const setFocusedState = (focused, park) => {
                 const locationPanel = getLocationPanel();
                 const attractionPanelList = getAttractionPanelList();
                 homePage?.classList.toggle("is-park-focused", focused);
+                focusedPark = focused ? park : null;
 
                 if (locationPanel) {
                     if (focused) {
@@ -177,10 +263,24 @@
                     addAttractionMarkers(park);
                 } else {
                     clearAttractionMarkers();
+                    window.closeHomepageAttractionWidget?.();
                     if (attractionPanelList) {
                         attractionPanelList.innerHTML = "";
                     }
                 }
+            };
+
+            const getWrappedLngDistance = (a, b) => {
+                const delta = Math.abs(a - b);
+                return Math.min(delta, 360 - delta);
+            };
+
+            const isAtMaxZoom = () => {
+                return Math.abs(map.getZoom() - initialZoom) <= resetZoomThreshold;
+            };
+
+            const updateResetButtonVisibility = () => {
+                homePage?.classList.toggle("show-reset", !isAtMaxZoom());
             };
 
             const focusPark = (parkId) => {
@@ -210,6 +310,10 @@
             window.focusHomepagePark = focusPark;
             window.resetHomepageGlobe = resetGlobe;
 
+            bindAttractionPanelInteractions();
+            map.on("moveend", updateResetButtonVisibility);
+            map.on("load", updateResetButtonVisibility);
+
             parks.forEach((park) => {
                 const markerElement = document.createElement("button");
                 markerElement.type = "button";
@@ -228,6 +332,7 @@
             });
 
             setFocusedState(false, null);
+            updateResetButtonVisibility();
         }
 
         if (!accessToken) {

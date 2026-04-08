@@ -1,0 +1,69 @@
+<script>
+    (() => {
+        const getOverlay = () => document.getElementById("attraction-widget-overlay");
+        const getParkNode = () => document.getElementById("attraction-widget-park");
+        const getTitleNode = () => document.getElementById("attraction-widget-title");
+        const getRatingNode = () => document.getElementById("attraction-widget-rating");
+        const getSubtitleNode = () => document.getElementById("attraction-widget-subtitle");
+        const getReviewsListNode = () => document.getElementById("attraction-widget-reviews-list");
+        const getCloseButton = () => document.getElementById("attraction-widget-close");
+        const getHomePage = () => document.querySelector(".home-page");
+
+        const closeWidget = () => {
+            const overlay = getOverlay();
+            if (!overlay) {
+                return;
+            }
+
+            overlay.hidden = true;
+            getHomePage()?.classList.remove("is-attraction-widget-open");
+        };
+
+        const openWidget = ({ parkTitle, parkLocation, attractionTitle, attractionSubtitle, attractionRating, attractionReviews }) => {
+            const overlay = getOverlay();
+            const parkNode = getParkNode();
+            const titleNode = getTitleNode();
+            const ratingNode = getRatingNode();
+            const subtitleNode = getSubtitleNode();
+            const reviewsListNode = getReviewsListNode();
+            if (!overlay || !parkNode || !titleNode || !ratingNode || !subtitleNode || !reviewsListNode) {
+                return;
+            }
+
+            parkNode.textContent = `${parkTitle} - ${parkLocation}`;
+            titleNode.textContent = attractionTitle;
+            ratingNode.innerHTML = window.renderHomepageStarRating?.(attractionRating) ?? "";
+            subtitleNode.textContent = attractionSubtitle;
+            reviewsListNode.innerHTML = window.renderHomepageAttractionReviews?.(attractionReviews) ?? "";
+
+            overlay.hidden = false;
+            getHomePage()?.classList.add("is-attraction-widget-open");
+        };
+
+        const bindWidgetInteractions = () => {
+            const overlay = getOverlay();
+            const closeButton = getCloseButton();
+            if (!overlay || !closeButton) {
+                return;
+            }
+
+            closeButton.addEventListener("click", closeWidget);
+            overlay.addEventListener("click", (event) => {
+                if (event.target === overlay) {
+                    closeWidget();
+                }
+            });
+
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "Escape") {
+                    closeWidget();
+                }
+            });
+        };
+
+        bindWidgetInteractions();
+        closeWidget();
+        window.openHomepageAttractionWidget = openWidget;
+        window.closeHomepageAttractionWidget = closeWidget;
+    })();
+</script>

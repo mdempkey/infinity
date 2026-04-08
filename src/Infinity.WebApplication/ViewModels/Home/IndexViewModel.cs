@@ -1,6 +1,6 @@
 namespace Infinity.WebApplication.ViewModels.Home;
 
-public sealed class HomeIndexViewModel
+public sealed class IndexViewModel
 {
     public required string MapboxAccessToken { get; init; }
     public required IReadOnlyList<ParkViewModel> Parks { get; init; }
@@ -28,7 +28,16 @@ public sealed class AttractionViewModel
 {
     public required string Title { get; init; }
     public required string Subtitle { get; init; }
+    public required double Rating { get; init; }
     public required CoordinateViewModel Coordinates { get; init; }
+    public required IReadOnlyList<AttractionReviewViewModel> Reviews { get; init; }
+}
+
+public sealed class AttractionReviewViewModel
+{
+    public required string Author { get; init; }
+    public required string Date { get; init; }
+    public required string Comment { get; init; }
 }
 
 public sealed class CoordinateViewModel

@@ -207,6 +207,164 @@
             gap: 8px;
         }
 
+        .home-page.show-reset .home-page__reset {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .attraction-widget-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            display: grid;
+            place-items: center;
+            background: rgba(5, 7, 13, 0.45);
+            pointer-events: auto;
+        }
+
+        .attraction-widget-overlay[hidden] {
+            display: none;
+        }
+
+        .attraction-widget {
+            width: min(560px, calc(100vw - 48px));
+            background: rgba(12, 17, 28, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 20px;
+            padding: 30px 28px;
+            position: relative;
+            box-shadow:
+                0 16px 44px rgba(0, 0, 0, 0.45),
+                0 0 0 1px rgba(255, 204, 0, 0.16);
+        }
+
+        .attraction-widget__close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+            color: #c7cedb;
+            cursor: pointer;
+            font-size: 1.2rem;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .attraction-widget__close-glyph {
+            display: inline-block;
+            transform: translateY(-1px);
+        }
+
+        .attraction-widget__eyebrow {
+            text-transform: uppercase;
+            letter-spacing: 0.09rem;
+            font-size: 0.72rem;
+            color: #a6b0c3;
+            margin-bottom: 8px;
+        }
+
+        .attraction-widget__subtitle {
+            margin-top: 10px;
+            color: #d1d7e2;
+            font-size: 1.02rem;
+        }
+
+        .attraction-widget__rating {
+            margin-top: 4px;
+            margin-bottom: 2px;
+        }
+
+        .attraction-widget__reviews {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .attraction-widget__reviews-title {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            letter-spacing: 0.03rem;
+            text-transform: uppercase;
+            color: #ffcc00;
+        }
+
+        .attraction-widget__review + .attraction-widget__review {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .attraction-widget__review-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 4px;
+            color: #a6b0c3;
+            font-size: 0.78rem;
+        }
+
+        .attraction-widget__review-comment {
+            margin: 0;
+            font-size: 0.92rem;
+            color: #d1d7e2;
+        }
+
+        .attraction-widget__reviews-empty {
+            margin: 0;
+            color: #a6b0c3;
+            font-size: 0.9rem;
+        }
+
+        .attraction-widget__review-composer {
+            margin-top: 14px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .attraction-widget__review-label {
+            font-size: 0.82rem;
+            color: #a6b0c3;
+        }
+
+        .attraction-widget__review-input {
+            width: 100%;
+            resize: vertical;
+            min-height: 88px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.05);
+            color: #f0f3f8;
+            padding: 10px 12px;
+            font: inherit;
+            line-height: 1.35;
+        }
+
+        .attraction-widget__review-input:focus-visible {
+            outline: 2px solid rgba(255, 204, 0, 0.8);
+            outline-offset: 1px;
+        }
+
+        .attraction-widget__review-submit {
+            justify-self: start;
+            margin-top: 2px;
+        }
+
+        .attraction-widget__review-note {
+            margin-top: 14px;
+            margin-bottom: 0;
+            color: #a6b0c3;
+            font-size: 0.9rem;
+        }
+
         .home-page__content {
             position: relative;
             z-index: 2;
@@ -233,6 +391,7 @@
         h2 {
             font-size: clamp(1.5rem, 4vw, 2.4rem);
             margin-bottom: 8px;
+            color: #ffcc00;
         }
 
         h3 {
@@ -307,6 +466,17 @@
             margin-top: 14px;
             padding-top: 14px;
             border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .attraction-summary--clickable {
+            cursor: pointer;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .attraction-summary--clickable:hover,
+        .attraction-summary--clickable:focus-visible {
+            border-color: #ffcc00;
+            transform: translateY(-1px);
         }
 
         .attraction-summary h4 {
@@ -389,7 +559,49 @@
         .star-rating {
             color: #ffcc00;
             font-size: 1.05rem;
-            margin-top: 10px;
+        }
+
+        .star-rating--five {
+            display: inline-flex;
+            align-items: center;
+            line-height: 1;
+            font-size: 1rem;
+            margin-top: 8px;
+            gap: 0.4rem;
+        }
+
+        .star-rating__stars {
+            display: inline-flex;
+            gap: 0.14rem;
+        }
+
+        .star-rating__star {
+            position: relative;
+            display: inline-block;
+            color: rgba(255, 255, 255, 0.28);
+        }
+
+        .star-rating__star--full {
+            color: #ffcc00;
+            filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.35));
+        }
+
+        .star-rating__star--half::after {
+            content: "★";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            overflow: hidden;
+            white-space: nowrap;
+            color: #ffcc00;
+            filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.35));
+        }
+
+        .star-rating__value {
+            color: #ffcc00;
+            font-size: 0.88rem;
+            letter-spacing: 0.02rem;
         }
 
         .review-prompt,
@@ -571,7 +783,7 @@
 <header class="navbar">
     <a class="site-title" asp-controller="Home" asp-action="Index" aria-label="Star Wars Attractions home">
         <span class="site-title__name">STAR WARS</span>
-        <span class="site-title__tag">Galactic Attractions</span>
+        <span class="site-title__tag">Themed Attractions</span>
     </a>
     <nav class="nav-links">
         <button type="button" class="nav-link-button" onclick="showLoginModal()">Log In</button>
@@ -615,6 +827,7 @@
         }
     });
 </script>
+<partial name="_StarRatingScript" />
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,12 +1,12 @@
-@model Infinity.WebApplication.ViewModels.Home.HomeIndexViewModel
+@model Infinity.WebApplication.ViewModels.Home.IndexViewModel
 @{
     ViewData["Title"] = "Star Wars Attractions";
 }
 
 <section class="home-page">
-    <partial name="_HomepageGlobe" />
+    <partial name="_Globe" />
     <div class="home-page__scrim"></div>
-    <button type="button" class="home-page__reset" onclick="resetHomepageGlobe()">Back to Parks</button>
+    <button type="button" class="home-page__reset" onclick="resetHomepageGlobe()">Back to Globe</button>
 
     <div class="home-page__content">
         <section class="home-hero">
@@ -30,4 +30,6 @@
             </section>
         </section>
     </div>
+
+    <partial name="_AttractionWidget" />
 </section>

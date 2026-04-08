@@ -1,0 +1,15 @@
+<div class="attraction-widget-overlay" id="attraction-widget-overlay" hidden>
+    <article class="attraction-widget" id="attraction-widget" role="dialog" aria-modal="true" aria-labelledby="attraction-widget-title">
+        <button type="button" class="attraction-widget__close" id="attraction-widget-close" aria-label="Close attraction details">
+            <span class="attraction-widget__close-glyph" aria-hidden="true">&times;</span>
+        </button>
+        <p class="attraction-widget__eyebrow" id="attraction-widget-park"></p>
+        <h2 id="attraction-widget-title"></h2>
+        <p class="star-rating attraction-widget__rating" id="attraction-widget-rating"></p>
+        <p class="attraction-widget__subtitle" id="attraction-widget-subtitle"></p>
+        <partial name="_Reviews" />
+    </article>
+</div>
+
+<partial name="_ReviewsScript" />
+<partial name="_AttractionWidgetScript" />
