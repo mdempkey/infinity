@@ -9,20 +9,22 @@
 
         const renderReviews = (reviews) => {
             if (!Array.isArray(reviews) || reviews.length === 0) {
-                return `<p class="attraction-widget__reviews-empty">No reviews yet. Be the first to leave a review.</p>`;
+                return `<p class="small text-secondary mb-0">No reviews yet. Be the first to leave a review.</p>`;
             }
 
-            return reviews
+            const rows = reviews
                 .map((review) => `
-                    <article class="attraction-widget__review">
-                        <div class="attraction-widget__review-meta">
-                            <strong>${escapeHtml(review.author)}</strong>
+                    <article class="list-group-item bg-transparent text-light border-secondary-subtle px-0">
+                        <div class="d-flex justify-content-between gap-2 small text-secondary mb-1">
+                            <strong class="text-light">${escapeHtml(review.author)}</strong>
                             <span>${escapeHtml(review.date)}</span>
                         </div>
-                        <p class="attraction-widget__review-comment">${escapeHtml(review.comment)}</p>
+                        <p class="mb-0 small text-light-emphasis">${escapeHtml(review.comment)}</p>
                     </article>
                 `)
                 .join("");
+
+            return `<div class="list-group list-group-flush mt-2">${rows}</div>`;
         };
 
         window.renderHomepageAttractionReviews = renderReviews;

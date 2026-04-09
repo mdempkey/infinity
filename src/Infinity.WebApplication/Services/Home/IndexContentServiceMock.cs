@@ -30,7 +30,7 @@ public sealed class IndexContentServiceMock(IConfiguration configuration) : IInd
                         {
                             Title = "Star Wars: Galaxy's Edge",
                             Subtitle = "Immersive Batuu land experience",
-                            Rating = 4.1,
+                            Rating = 3.7,
                             Coordinates = new CoordinateViewModel { Lng = -117.9184, Lat = 33.8141 },
                             Reviews =
                             [

@@ -6,27 +6,27 @@
 <section class="home-page">
     <partial name="_Globe" />
     <div class="home-page__scrim"></div>
-    <button type="button" class="home-page__reset" onclick="resetHomepageGlobe()">Back to Globe</button>
+    <button type="button" class="home-page__reset btn btn-outline-primary btn-sm px-3 py-2" onclick="resetHomepageGlobe()">Back to Globe</button>
 
     <div class="home-page__content">
         <section class="home-hero">
             <section class="location-panel location-panel--parks">
                 @foreach (var park in Model.Parks)
                 {
-                    <article class="attraction-card location-card location-card--clickable"
+                    <article class="attraction-card location-card location-card--clickable card text-bg"
                              role="button"
                              tabindex="0"
                              aria-label="Focus @park.Title on map"
                              onclick="focusHomepagePark('@park.Id')"
                              onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); focusHomepagePark('@park.Id'); }">
-                        <h3>@park.Title</h3>
-                        <p>@park.City, @park.Country</p>
+                        <h3 class="h5 text-warning mb-1">@park.Title</h3>
+                        <p class="text-secondary mb-0">@park.City, @park.Country</p>
                     </article>
                 }
             </section>
 
             <section class="location-panel attraction-panel" id="attraction-panel">
-                <div id="attraction-panel-list"></div>
+                <div id="attraction-panel-list" class="d-grid gap-3"></div>
             </section>
         </section>
     </div>

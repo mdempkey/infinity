@@ -161,14 +161,14 @@
 
                 attractionPanelList.innerHTML = (park.attractions ?? [])
                     .map((attraction, index) => `
-                        <article class="attraction-card location-card attraction-summary attraction-summary--clickable"
+                        <article class="attraction-card location-card location-card--clickable card text-bg"
                                  role="button"
                                  tabindex="0"
                                  data-attraction-index="${index}"
                                  aria-label="View details for ${escapeHtml(attraction.title)}">
-                            <h3>${escapeHtml(attraction.title)}</h3>
+                            <h3 class="h5 text-warning mb-1">${escapeHtml(attraction.title)}</h3>
                             ${window.renderHomepageStarRating?.(attraction.rating) ?? ""}
-                            <p>${escapeHtml(attraction.subtitle)}</p>
+                            <p class="text-light-emphasis mb-0">${escapeHtml(attraction.subtitle)}</p>
                         </article>
                     `)
                     .join("");
