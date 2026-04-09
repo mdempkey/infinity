@@ -1,0 +1,48 @@
+@model Infinity.WebApplication.ViewModels.Home.IndexViewModel
+@using System.Text.Json
+@{
+    var globeConfigJson = JsonSerializer.Serialize(new
+    {
+        accessToken = Model.MapboxAccessToken,
+        globe = new
+        {
+            initialCenter = new[] { Model.Globe.InitialCenter.Lng, Model.Globe.InitialCenter.Lat },
+            initialZoom = Model.Globe.InitialZoom,
+            focusedZoom = Model.Globe.FocusedZoom
+        },
+        parks = Model.Parks.Select(park => new
+        {
+            id = park.Id,
+            title = park.Title,
+            location = park.City,
+            country = park.Country,
+            coordinates = new[] { park.Coordinates.Lng, park.Coordinates.Lat },
+            attractions = park.Attractions.Select(attraction => new
+            {
+                title = attraction.Title,
+                subtitle = attraction.Subtitle,
+                rating = attraction.Rating,
+                coordinates = new[] { attraction.Coordinates.Lng, attraction.Coordinates.Lat },
+                reviews = attraction.Reviews.Select(review => new
+                {
+                    author = review.Author,
+                    date = review.Date,
+                    comment = review.Comment
+                })
+            })
+        })
+    });
+}
+
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.js"></script>
+
+<div class="home-page__background" aria-hidden="true">
+    <div class="homepage-globe">
+        <div id="homepage-globe"></div>
+        <div class="homepage-globe__fallback"></div>
+    </div>
+</div>
+
+<script id="homepage-globe-config" type="application/json">@Html.Raw(globeConfigJson)</script>
+<partial name="_GlobeScript" />

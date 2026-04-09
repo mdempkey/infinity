@@ -1,0 +1,60 @@
+:root {
+    --bs-body-color: #c7cedb;
+    --bs-body-color-rgb: 199, 206, 219;
+    --bs-body-bg: #05070d;
+    --bs-body-bg-rgb: 5, 7, 13;
+    --bs-primary: #ffc107;
+    --bs-primary-rgb: 255, 193, 7;
+    --bs-primary-bg-subtle: #a88b00;
+    --bs-primary-border-subtle: #ddb400;
+    --bs-primary-text-emphasis: #ffc107;
+    --bs-border-color-translucent: rgba(255, 255, 255, 0.12);
+    --bs-emphasis: #ffc107;
+}
+
+.site-navbar .btn-link {
+    --bs-btn-color: #c7cedb;
+    --bs-btn-hover-color: #ffc107;
+    --bs-btn-active-color: #ffc107;
+    --bs-btn-border-color: transparent;
+    text-decoration: none;
+}
+
+.btn-warning {
+    --bs-btn-color: #000000;
+    --bs-btn-hover-color: #000000;
+    --bs-btn-active-color: #000000;
+    --bs-btn-hover-bg: #ffca2c;
+    --bs-btn-hover-border-color: #ffca2c;
+    --bs-btn-active-bg: #ffcd39;
+    --bs-btn-active-border-color: #ffcd39;
+    --bs-btn-border-radius: 999px;
+    --bs-btn-font-weight: 700;
+}
+
+.attraction-widget {
+    --bs-card-bg: rgba(12, 17, 28, 0.95);
+    --bs-card-border-color: rgba(255, 255, 255, 0.14);
+    --bs-card-border-radius: 20px;
+}
+
+.attraction-card {
+    --bs-card-bg: rgba(12, 17, 28, 0.9);
+    --bs-card-border-color: rgba(255, 255, 255, 0.08);
+    --bs-card-border-radius: 20px;
+    --bs-card-spacer-y: 24px;
+    --bs-card-spacer-x: 24px;
+}
+
+.attraction-widget__reviews .list-group {
+    --bs-list-group-bg: transparent;
+    --bs-list-group-border-color: rgba(255, 255, 255, 0.08);
+    --bs-list-group-color: #d1d7e2;
+}
+
+.modal-content {
+    --bs-modal-bg: #0c111c;
+    --bs-modal-border-color: rgba(255, 255, 255, 0.08);
+    --bs-modal-border-radius: 20px;
+    --bs-modal-padding: 32px;
+}

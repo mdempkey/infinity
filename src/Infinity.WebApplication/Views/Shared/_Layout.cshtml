@@ -4,107 +4,242 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/bootstrap-overrides.css" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        }
-
         body {
             min-height: 100vh;
             background:
                 radial-gradient(circle at top, rgba(255, 204, 0, 0.1), transparent 30%),
                 linear-gradient(180deg, #05070d 0%, #111827 50%, #05070d 100%);
-            color: #ffffff;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        a {
-            color: inherit;
-            text-decoration: none;
+        body:has(.home-page) {
+            overflow: hidden;
         }
 
-        button {
-            font: inherit;
+        body:has(.park-detail-page) {
+            overflow: hidden;
         }
 
-        .navbar {
-            display: flex;
-            justify-content: flex-end;
-            padding: 20px 50px;
-            background-color: rgba(5, 7, 13, 0.92);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            position: sticky;
-            top: 0;
+        .site-navbar {
             backdrop-filter: blur(12px);
             z-index: 10;
         }
 
-        .nav-links {
-            display: flex;
-            gap: 16px;
+        .site-title {
+            display: inline-flex;
+            flex-direction: column;
+            gap: 2px;
+            text-decoration: none;
         }
 
-        .nav-link-button {
-            background: transparent;
-            border: none;
-            color: #ffffff;
-            cursor: pointer;
-            font-size: 0.95rem;
+        .site-title__name {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 0.18rem;
+            color: #ffc107;
         }
 
-        .nav-link-button:hover {
-            color: #ffcc00;
+        .site-title__tag {
+            font-size: 0.75rem;
+            letter-spacing: 0.18rem;
+            text-transform: uppercase;
+            color: #c7cedb;
         }
 
         main {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 48px 20px 72px;
+            padding: 0 0 72px;
         }
 
-        .hero-section {
-            display: grid;
-            gap: 36px;
+        .home-page {
+            position: relative;
+            height: calc(100vh - 81px);
+            min-height: calc(100vh - 81px);
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            overflow: hidden;
         }
 
-        .hero {
-            text-align: center;
+        .home-page__background,
+        .homepage-globe,
+        .home-page__scrim {
+            position: absolute;
+            inset: 0;
         }
 
-        .eyebrow {
-            color: #ffcc00;
-            text-transform: uppercase;
-            letter-spacing: 0.2rem;
-            margin-bottom: 12px;
-            font-size: 0.8rem;
+        .home-page__background {
+            z-index: 0;
+            background: #05070d;
         }
 
-        h1 {
-            font-size: clamp(3rem, 10vw, 5.5rem);
-            letter-spacing: 0.25rem;
-            color: #ffcc00;
+        .homepage-globe {
+            overflow: hidden;
         }
 
-        h2 {
-            font-size: clamp(1.5rem, 4vw, 2.4rem);
-            margin-bottom: 8px;
+        #homepage-globe {
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 130%;
+            height: 100%;
+            transform: translateX(-22.5%);
         }
 
-        h3 {
-            font-size: 1.1rem;
+        .homepage-globe.is-ready .homepage-globe__fallback {
+            opacity: 0;
+            visibility: hidden;
         }
 
-        p {
-            color: #c7cedb;
-            line-height: 1.5;
-        }
-
-        .map-container {
-            margin-top: 40px;
+        .homepage-globe__fallback {
+            position: absolute;
+            inset: 0;
+            z-index: 4;
             display: flex;
+            align-items: center;
             justify-content: center;
+            color: rgba(255, 255, 255, 0.55);
+            background:
+                radial-gradient(circle at 32% 50%, rgba(54, 89, 154, 0.45), transparent 28%),
+                radial-gradient(circle at 32% 50%, rgba(255, 204, 0, 0.08), transparent 45%),
+                linear-gradient(180deg, #09111f 0%, #05070d 100%);
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+        }
+
+        .homepage-globe .mapboxgl-canvas,
+        .homepage-globe .mapboxgl-canvas-container {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .homepage-globe .mapboxgl-canvas-container {
+            z-index: 0;
+        }
+
+        .homepage-globe__marker {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #10131d;
+            border-radius: 999px;
+            background: #ffc107;
+            box-shadow:
+                0 0 10px rgba(255, 204, 0, 0.75),
+                0 0 22px rgba(255, 204, 0, 0.45),
+                0 0 40px rgba(255, 204, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .home-page__scrim {
+            z-index: 1;
+            background:
+                radial-gradient(circle at center, transparent 0%, rgba(5, 7, 13, 0.08) 48%, rgba(5, 7, 13, 0.56) 100%),
+                linear-gradient(180deg, rgba(5, 7, 13, 0.18) 0%, rgba(5, 7, 13, 0.42) 100%);
+            pointer-events: none;
+        }
+
+        .home-page__reset {
+            --bs-btn-bg: rgba(12, 17, 28, 0.9);
+            --bs-btn-border-color: rgba(255, 255, 255, 0.08);
+            --bs-btn-color: #c7cedb;
+            --bs-btn-hover-color: #c7cedb;
+            --bs-btn-hover-bg: rgba(12, 17, 28, 0.9);
+            --bs-btn-hover-border-color: #ffc107;
+            --bs-btn-active-color: #c7cedb;
+            --bs-btn-active-bg: rgba(12, 17, 28, 0.9);
+            --bs-btn-active-border-color: #ffc107;
+            --bs-btn-border-radius: 20px;
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            z-index: 3;
+            display: none;
+            line-height: 1.2;
+            backdrop-filter: blur(10px);
+            transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .home-page__reset:hover,
+        .home-page__reset:focus-visible {
+            border-color: rgba(255, 204, 0, 0.75);
+            transform: translateY(-1px);
+        }
+
+        .home-page.is-park-focused .home-page__reset {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .home-page.show-reset .home-page__reset {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .attraction-widget-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            display: grid;
+            place-items: center;
+            background: rgba(5, 7, 13, 0.45);
+            pointer-events: auto;
+        }
+
+        .attraction-widget-overlay[hidden] {
+            display: none;
+        }
+
+        .attraction-widget {
+            width: min(560px, calc(100vw - 48px));
+            padding: 30px 28px;
+            position: relative;
+            box-shadow:
+                0 16px 44px rgba(0, 0, 0, 0.45),
+                0 0 0 1px rgba(255, 204, 0, 0.16);
+        }
+
+        .attraction-widget__close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 34px;
+            height: 34px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .attraction-widget__close-glyph {
+            display: inline-block;
+            transform: translateY(-1px);
+        }
+
+        .attraction-widget__rating {
+            margin-top: 4px;
+            margin-bottom: 2px;
+        }
+
+        .home-page__content {
+            position: relative;
+            z-index: 2;
+            margin: 0 auto;
+            padding: 40px;
+            height: calc(100vh - 81px);
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+            pointer-events: none;
+        }
+
+        .home-hero {
+            width: min(420px, 100%);
+            max-height: 100%;
         }
 
         .image-placeholder {
@@ -119,48 +254,97 @@
             overflow: hidden;
         }
 
-        .map-globe {
-            width: min(420px, 88vw);
-            height: min(420px, 88vw);
-            border-radius: 50%;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
-        }
-
-        .marker {
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background-color: #ffcc00;
-            border-radius: 50%;
-            border: 3px solid #10131d;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .marker:hover {
-            transform: scale(1.25);
-            box-shadow: 0 0 0 8px rgba(255, 204, 0, 0.16);
-        }
-
-        .ca-marker { top: 35%; left: 20%; }
-        .paris-marker { top: 30%; left: 55%; }
-
         .park-previews,
         .attraction-list {
             display: grid;
             gap: 24px;
         }
 
-        .park-previews {
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        .location-panel {
+            display: grid;
+            gap: 18px;
+            justify-items: stretch;
+            max-height: 100%;
+            padding-top: 10px;
+            overflow-y: scroll;
+            scrollbar-width: none;
+            overscroll-behavior: contain;
+            -ms-overflow-style: none;
+            pointer-events: auto;
+        }
+
+        .attraction-panel {
+            display: none;
+        }
+
+        .home-page.is-park-focused .location-panel {
+            overflow: hidden;
+        }
+
+        .home-page.is-park-focused .location-panel--parks {
+            display: none;
+        }
+
+        .home-page.is-park-focused .attraction-panel {
+            display: grid;
+        }
+
+        .home-page.is-park-focused .homepage-globe .mapboxgl-canvas-container,
+        .home-page.is-park-focused .homepage-globe .mapboxgl-canvas-container.mapboxgl-interactive,
+        .home-page.is-park-focused .homepage-globe .mapboxgl-canvas-container.mapboxgl-interactive:active,
+        .home-page.is-park-focused .homepage-globe .mapboxgl-canvas {
+            cursor: default !important;
+        }
+
+        .location-panel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .attraction-summary + .attraction-summary {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .attraction-summary--clickable {
+            cursor: pointer;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .attraction-summary--clickable:hover,
+        .attraction-summary--clickable:focus-visible {
+            border-color: #ffc107;
+            transform: translateY(-1px);
+        }
+
+        .attraction-summary h4 {
+            font-size: 1rem;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .attraction-summary p {
+            font-size: 0.9rem;
         }
 
         .attraction-card {
-            background: rgba(12, 17, 28, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 24px;
-            border-radius: 20px;
-            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.25);
+            padding: var(--bs-card-spacer-y) var(--bs-card-spacer-x);
+        }
+
+        .location-card--clickable {
+            cursor: pointer;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .location-card--clickable:hover,
+        .location-card--clickable:focus-visible {
+            border-color: #ffc107;
+            transform: translateY(-1px);
+        }
+
+        .location-card--clickable:focus-visible {
+            outline: 2px solid #ffc107;
+            outline-offset: 2px;
         }
 
         .inline-btn {
@@ -171,6 +355,16 @@
         .park-detail-page {
             max-width: 840px;
             margin: 0 auto;
+            padding: 48px 20px 0;
+            height: calc(100vh - 81px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .park-detail-page::-webkit-scrollbar {
+            display: none;
         }
 
         .park-header {
@@ -186,11 +380,6 @@
             margin-bottom: 8px;
         }
 
-        .link-btn:hover,
-        .back-btn:hover {
-            color: #ffffff;
-        }
-
         .attraction-img {
             width: 100%;
             min-height: 240px;
@@ -198,9 +387,51 @@
         }
 
         .star-rating {
-            color: #ffcc00;
+            color: #ffc107;
             font-size: 1.05rem;
-            margin-top: 10px;
+        }
+
+        .star-rating--five {
+            display: inline-flex;
+            align-items: center;
+            line-height: 1;
+            font-size: 1rem;
+            margin-top: 8px;
+            gap: 0.4rem;
+        }
+
+        .star-rating__stars {
+            display: inline-flex;
+            gap: 0.14rem;
+        }
+
+        .star-rating__star {
+            position: relative;
+            display: inline-block;
+            color: rgba(255, 255, 255, 0.28);
+        }
+
+        .star-rating__star--full {
+            color: #ffc107;
+            filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.35));
+        }
+
+        .star-rating__star--half::after {
+            content: "★";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            overflow: hidden;
+            white-space: nowrap;
+            color: #ffc107;
+            filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.35));
+        }
+
+        .star-rating__value {
+            color: #ffc107;
+            font-size: 0.88rem;
+            letter-spacing: 0.02rem;
         }
 
         .review-prompt,
@@ -215,24 +446,6 @@
             display: grid;
             justify-items: start;
             gap: 10px;
-        }
-
-        .yellow-btn {
-            background-color: #ffcc00;
-            color: #000000;
-            border: none;
-            padding: 11px 20px;
-            border-radius: 999px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .yellow-btn:hover {
-            background-color: #e6b800;
-        }
-
-        .full-width {
-            width: 100%;
         }
 
         .reviews-section h3 {
@@ -260,7 +473,7 @@
             font-size: 0.75rem;
             font-weight: 700;
             background: rgba(255, 204, 0, 0.15);
-            color: #ffcc00;
+            color: #ffc107;
         }
 
         .date,
@@ -274,54 +487,55 @@
             font-size: 0.85rem;
         }
 
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 20;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal-content {
-            width: min(420px, 100%);
-            background: #0c111c;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 32px;
-            border-radius: 20px;
-            position: relative;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 14px;
-            right: 18px;
-            background: transparent;
-            border: none;
-            font-size: 1.8rem;
-            color: #c7cedb;
-            cursor: pointer;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background-color: #121827;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #ffffff;
-            border-radius: 10px;
-        }
-
         @@media (max-width: 640px) {
-            .navbar {
-                padding: 18px 20px;
+            .site-navbar {
+                padding: 20px;
+                gap: 16px;
+                align-items: flex-start;
+                flex-direction: column;
             }
 
             main {
+                padding-bottom: 48px;
+            }
+
+            .home-page {
+                height: calc(100vh - 73px);
+                min-height: calc(100vh - 73px);
+            }
+
+            .home-page__content {
                 padding-top: 32px;
+                height: calc(100vh - 73px);
+            }
+
+            .home-page__reset {
+                top: 18px;
+                left: 18px;
+            }
+
+            #homepage-globe {
+                width: 100%;
+                transform: none;
+            }
+
+            .homepage-globe__fallback {
+                background:
+                    radial-gradient(circle at 50% 50%, rgba(54, 89, 154, 0.45), transparent 28%),
+                    radial-gradient(circle at 50% 50%, rgba(255, 204, 0, 0.08), transparent 45%),
+                    linear-gradient(180deg, #09111f 0%, #05070d 100%);
+            }
+
+            .home-hero {
+                width: 100%;
+            }
+
+            .location-panel {
+                width: 100%;
+            }
+
+            .park-detail-page {
+                height: calc(100vh - 73px);
             }
 
             .reviewer-info {
@@ -337,49 +551,58 @@
     </style>
 </head>
 <body>
-<header class="navbar">
-    <nav class="nav-links">
-        <button type="button" class="nav-link-button" onclick="showLoginModal()">Log In</button>
-        <button type="button" class="nav-link-button" onclick="showLoginModal()">Sign Up</button>
+<header class="site-navbar navbar navbar-expand sticky-top px-4 px-md-5 py-3 border-bottom border-secondary-subtle">
+    <a class="site-title navbar-brand p-0 m-0" asp-controller="Home" asp-action="Index" aria-label="Star Wars Attractions home">
+        <span class="site-title__name">STAR WARS</span>
+        <span class="site-title__tag">Themed Attractions</span>
+    </a>
+    <nav class="ms-auto d-flex gap-3 align-items-center justify-content-end">
+        <button type="button" class="btn btn-link btn-sm p-0" onclick="showLoginModal()">Log In</button>
+        <button type="button" class="btn btn-link btn-sm p-0" onclick="showLoginModal()">Sign Up</button>
     </nav>
 </header>
 <main>
         @RenderBody()
 </main>
-<div id="login-modal" class="modal-overlay">
-    <div class="modal-content">
-        <button type="button" class="close-btn" onclick="hideLoginModal()" aria-label="Close">&times;</button>
-        <h2>Welcome to Star Wars Attractions</h2>
-        <p>Log In</p>
-        <form onsubmit="event.preventDefault(); hideLoginModal();">
-            <input type="email" placeholder="Email" class="form-input" required />
-            <input type="password" placeholder="Password" class="form-input" required />
-            <button type="submit" class="yellow-btn full-width">Log In</button>
-        </form>
+<div class="modal fade" id="login-modal" tabindex="-1" aria-labelledby="login-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-light">
+            <div class="modal-header border-secondary-subtle">
+                <h5 class="modal-title text-warning" id="login-modal-title">Welcome to Star Wars Attractions</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-secondary mb-3">Log in to write rate attractions and write reviews.</p>
+                <form class="d-grid gap-2" onsubmit="event.preventDefault(); hideLoginModal();">
+                    <input type="email" placeholder="Email" class="form-control bg-dark text-light border-secondary" required />
+                    <input type="password" placeholder="Password" class="form-control bg-dark text-light border-secondary" required />
+                    <button type="submit" class="btn btn-warning w-100 mt-2">Log In</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    let loginModalInstance = null;
+
     function showLoginModal() {
-        const modal = document.getElementById("login-modal");
-        if (modal) {
-            modal.style.display = "flex";
+        const modalElement = document.getElementById("login-modal");
+        if (!modalElement || !window.bootstrap) {
+            return;
         }
+
+        loginModalInstance ??= window.bootstrap.Modal.getOrCreateInstance(modalElement);
+        loginModalInstance.show();
     }
 
     function hideLoginModal() {
-        const modal = document.getElementById("login-modal");
-        if (modal) {
-            modal.style.display = "none";
+        if (loginModalInstance) {
+            loginModalInstance.hide();
         }
     }
-
-    window.addEventListener("click", (event) => {
-        const modal = document.getElementById("login-modal");
-        if (modal && event.target === modal) {
-            hideLoginModal();
-        }
-    });
 </script>
+<partial name="_StarRatingScript" />
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

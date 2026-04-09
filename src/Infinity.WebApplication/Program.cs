@@ -1,6 +1,9 @@
+using Infinity.WebApplication.Services.Home;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IIndexContentService, IndexContentServiceMock>();
 
 var app = builder.Build();
 

@@ -1,35 +1,35 @@
+@model Infinity.WebApplication.ViewModels.Home.IndexViewModel
 @{
     ViewData["Title"] = "Star Wars Attractions";
 }
 
-<section class="hero-section">
-    <div class="hero">
-        <p class="eyebrow">Explore Attractions from Disney Parks around the world</p>
-        <h1>STAR WARS</h1>
-        <h2>Galactic Attractions</h2>
+<section class="home-page">
+    <partial name="_Globe" />
+    <div class="home-page__scrim"></div>
+    <button type="button" class="home-page__reset btn btn-outline-primary btn-sm px-3 py-2" onclick="resetHomepageGlobe()">Back to Globe</button>
 
-        <div class="map-container">
-            <div class="image-placeholder map-globe" aria-label="Park map">
-                <span>[Globe Image Placeholder]</span>
-                <a class="marker ca-marker" asp-controller="Home" asp-action="Disneyland" aria-label="Disneyland Resort"></a>
-                <a class="marker paris-marker" asp-controller="Home" asp-action="DisneylandParis" aria-label="Disneyland Paris"></a>
-            </div>
-        </div>
+    <div class="home-page__content">
+        <section class="home-hero">
+            <section class="location-panel location-panel--parks">
+                @foreach (var park in Model.Parks)
+                {
+                    <article class="attraction-card location-card location-card--clickable card text-bg"
+                             role="button"
+                             tabindex="0"
+                             aria-label="Focus @park.Title on map"
+                             onclick="focusHomepagePark('@park.Id')"
+                             onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); focusHomepagePark('@park.Id'); }">
+                        <h3 class="h5 text-warning mb-1">@park.Title</h3>
+                        <p class="text-secondary mb-0">@park.City, @park.Country</p>
+                    </article>
+                }
+            </section>
+
+            <section class="location-panel attraction-panel" id="attraction-panel">
+                <div id="attraction-panel-list" class="d-grid gap-3"></div>
+            </section>
+        </section>
     </div>
 
-    <section class="park-previews">
-        <article class="attraction-card">
-            <h3>Disneyland Resort</h3>
-            <p>Anaheim, California</p>
-            <p>Galaxy's Edge and Rise of the Resistance.</p>
-            <a class="yellow-btn inline-btn" asp-controller="Home" asp-action="Disneyland">View Park</a>
-        </article>
-
-        <article class="attraction-card">
-            <h3>Disneyland Paris</h3>
-            <p>Marne-la-Vallee, France</p>
-            <p>Star Tours and Hyperspace Mountain.</p>
-            <a class="yellow-btn inline-btn" asp-controller="Home" asp-action="DisneylandParis">View Park</a>
-        </article>
-    </section>
+    <partial name="_AttractionWidget" />
 </section>

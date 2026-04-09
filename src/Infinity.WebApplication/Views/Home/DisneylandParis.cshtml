@@ -2,41 +2,41 @@
     ViewData["Title"] = "Disneyland Paris | Star Wars Attractions";
 }
 
-<section class="park-detail-page">
-    <a class="back-btn link-btn" asp-controller="Home" asp-action="Index">&larr; Back</a>
+<section class="park-detail-page container">
+    <a class="back-btn link-btn btn btn-link text-secondary px-0" asp-controller="Home" asp-action="Index">&larr; Back</a>
 
-    <div class="park-header">
-        <h1>Disneyland Paris</h1>
-        <p>Marne-la-Vallee, France</p>
+    <div class="park-header border-bottom border-secondary-subtle">
+        <h1 class="display-6 text-warning mb-1">Disneyland Paris</h1>
+        <p class="text-secondary mb-0">Marne-la-Vallee, France</p>
     </div>
 
     <div class="attraction-list">
-        <article class="attraction-card">
-            <h2>Star Tours: The Adventures Continue</h2>
-            <p><strong>RIDE:</strong> 3D motion simulator space flight.</p>
-            <div class="star-rating">★★★★☆ 4.5</div>
+        <article class="attraction-card card bg-dark text-light border-secondary-subtle shadow-sm">
+            <h2 class="h4 text-warning mb-2">Star Tours: The Adventures Continue</h2>
+            <p class="text-light-emphasis"><strong>RIDE:</strong> 3D motion simulator space flight.</p>
+            <div data-star-rating="4.5"></div>
             <div class="image-placeholder attraction-img"><span>[Star Tours Image]</span></div>
 
-            <div class="review-prompt">
-                <p>Please log in to leave a review</p>
-                <button type="button" class="yellow-btn" onclick="showLoginModal()">Log In / Sign Up</button>
+            <div class="review-prompt card bg-transparent border-secondary-subtle">
+                <p class="text-secondary mb-1">Please log in to leave a review</p>
+                <button type="button" class="btn btn-warning btn-sm fw-semibold" onclick="showLoginModal()">Log In / Sign Up</button>
             </div>
 
-            <div class="reviews-section">
-                <h3>Reviews</h3>
-                <p class="empty-reviews">No reviews yet. Be the first to leave a review.</p>
+            <div class="reviews-section card bg-transparent border-secondary-subtle">
+                <h3 class="h6 text-warning mb-3">Reviews</h3>
+                <p class="empty-reviews mb-0">No reviews yet. Be the first to leave a review.</p>
             </div>
         </article>
 
-        <article class="attraction-card">
-            <h2>Hyperspace Mountain</h2>
-            <p><strong>RIDE:</strong> High-speed indoor roller coaster.</p>
-            <div class="star-rating">★★★★☆ 4.2</div>
+        <article class="attraction-card card bg-dark text-light border-secondary-subtle shadow-sm">
+            <h2 class="h4 text-warning mb-2">Hyperspace Mountain</h2>
+            <p class="text-light-emphasis"><strong>RIDE:</strong> High-speed indoor roller coaster.</p>
+            <div data-star-rating="4.2"></div>
             <div class="image-placeholder attraction-img"><span>[Hyperspace Mountain Image]</span></div>
 
-            <div class="review-prompt">
-                <p>Please log in to leave a review</p>
-                <button type="button" class="yellow-btn" onclick="showLoginModal()">Log In / Sign Up</button>
+            <div class="review-prompt card bg-transparent border-secondary-subtle">
+                <p class="text-secondary mb-1">Please log in to leave a review</p>
+                <button type="button" class="btn btn-warning btn-sm fw-semibold" onclick="showLoginModal()">Log In / Sign Up</button>
             </div>
         </article>
     </div>
