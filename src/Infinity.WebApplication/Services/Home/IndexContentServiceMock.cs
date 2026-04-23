@@ -4,9 +4,9 @@ namespace Infinity.WebApplication.Services.Home;
 
 public sealed class IndexContentServiceMock(IConfiguration configuration) : IIndexContentService
 {
-    public IndexViewModel BuildIndexViewModel()
+    public Task<IndexViewModel> BuildIndexViewModelAsync()
     {
-        return new IndexViewModel
+        return Task.FromResult(new IndexViewModel
         {
             MapboxAccessToken = configuration["Mapbox:AccessToken"] ?? string.Empty,
             Globe = new GlobeViewModel
@@ -94,6 +94,6 @@ public sealed class IndexContentServiceMock(IConfiguration configuration) : IInd
                     ]
                 }
             ]
-        };
+        });
     }
 }
