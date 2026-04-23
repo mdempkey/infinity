@@ -39,38 +39,4 @@ public class MockAttractionsController : ControllerBase, IAttractionsController
 
         return attraction;
     }
-
-    [HttpPost("")]
-    public async Task<ActionResult<Attraction>> AddAttraction(Attraction attraction)
-    {
-        attractions.Add(attraction);
-        return CreatedAtAction(nameof(GetAttraction), new { id = attraction.Id }, attraction);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> EditAttraction(string id, Attraction attraction)
-    {
-        if (id != attraction.Id)
-            return BadRequest();
-
-        int attractionIndex = attractions.FindIndex(attr => attr.Id == id);
-        if (attractionIndex != -1)
-            attractions[attractionIndex] = attraction;
-        else
-            throw new DbUpdateConcurrencyException();
-
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAttraction(string id)
-    {
-        var attraction = attractions.Find(attr => attr.Id == id);
-        if (attraction == null)
-            return NotFound();
-
-        attractions.Remove(attraction);
-
-        return NoContent();
-    }
 }
