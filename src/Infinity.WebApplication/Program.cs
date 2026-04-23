@@ -3,7 +3,11 @@ using Infinity.WebApplication.Services.Home;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<IIndexContentService, IndexContentServiceMock>();
+builder.Services.AddHttpClient<IIndexContentService, IndexContentService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["InfinityApi:BaseUrl"]
+        ?? throw new InvalidOperationException("InfinityApi:BaseUrl is not configured."));
+});
 
 var app = builder.Build();
 

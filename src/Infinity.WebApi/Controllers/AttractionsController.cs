@@ -34,44 +34,4 @@ public class AttractionsController : ControllerBase, IAttractionsController
 
         return attraction;
     }
-
-    [HttpPost("")]
-    public async Task<ActionResult<Attraction>> AddAttraction(Attraction attraction)
-    {
-        _context.Attractions.Add(attraction);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetAttraction), new { id = attraction.Id }, attraction);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> EditAttraction(string id, Attraction attraction)
-    {
-        if (id != attraction.Id) return BadRequest();
-
-        _context.Entry(attraction).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!_context.Attractions.Any(u => u.Id == id)) return NotFound();
-            throw;
-        }
-
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAttraction(string id)
-    {
-        var attraction = await _context.Attractions.FindAsync(id);
-        if (attraction == null) return NotFound();
-
-        _context.Attractions.Remove(attraction);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
 }
