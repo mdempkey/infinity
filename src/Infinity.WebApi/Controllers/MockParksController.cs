@@ -39,38 +39,4 @@ public class MockParksController : ControllerBase, IParksController
 
         return park;
     }
-
-    [HttpPost("")]
-    public async Task<ActionResult<Park>> AddPark(Park park)
-    {
-        parks.Add(park);
-        return CreatedAtAction(nameof(GetPark), new { id = park.Id }, park);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> EditPark(string id, Park park)
-    {
-        if (id != park.Id)
-            return BadRequest();
-
-        int parkIndex = parks.FindIndex(p => p.Id == id);
-        if (parkIndex != -1)
-            parks[parkIndex] = park;
-        else
-            throw new DbUpdateConcurrencyException();
-
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeletePark(string id)
-    {
-        var park = parks.Find(p => p.Id == id);
-        if (park == null)
-            return NotFound();
-
-        parks.Remove(park);
-
-        return NoContent();
-    }
 }
