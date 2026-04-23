@@ -7,8 +7,8 @@ public sealed class IndexContentService(IConfiguration configuration, HttpClient
 {
     public async Task<IndexViewModel> BuildIndexViewModelAsync()
     {
-        var parks = await httpClient.GetFromJsonAsync<List<ParkDto>>("/api/parks") ?? [];
-        var attractions = await httpClient.GetFromJsonAsync<List<AttractionDto>>("/api/attractions") ?? [];
+        var parks = await httpClient.GetFromJsonAsync<List<ParkDto>>("/api/Parks") ?? [];
+        var attractions = await httpClient.GetFromJsonAsync<List<AttractionDto>>("/api/Attractions") ?? [];
 
         var attractionsByPark = attractions
             .GroupBy(a => a.ParkId)

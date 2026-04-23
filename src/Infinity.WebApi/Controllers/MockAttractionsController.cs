@@ -9,9 +9,9 @@ namespace Infinity.WebApi.Controllers;
 public class MockAttractionsController : ControllerBase, IAttractionsController
 {
     private List<Attraction> attractions;
-    private Attraction attractionOne = new Attraction { Id = "1", ParkId = "1", Name = "AttractionOne", Description = "Test", Lat = 0, Lng = 0};
-    private Attraction attractionTwo = new Attraction { Id = "2", ParkId = "1", Name = "AttractionTwo", Description = "Test", Lat = 0, Lng = 0 };
-    private Attraction attractionThree = new Attraction { Id = "3", ParkId = "1", Name = "AttractionThree", Description = "Test", Lat = 0, Lng = 0 };
+    private Attraction attractionOne = new Attraction { Id = "1", ParkId = "park_mock_1", Name = "AttractionOne", Description = "Test", Lat = 0, Lng = 0};
+    private Attraction attractionTwo = new Attraction { Id = "2", ParkId = "park_mock_1", Name = "AttractionTwo", Description = "Test", Lat = 0, Lng = 0 };
+    private Attraction attractionThree = new Attraction { Id = "3", ParkId = "park_mock_1", Name = "AttractionThree", Description = "Test", Lat = 0, Lng = 0 };
 
     public MockAttractionsController()
     {
