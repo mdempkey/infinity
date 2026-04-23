@@ -1,25 +1,34 @@
 using Microsoft.EntityFrameworkCore;
 using Infinity.WebApi.Data;
+using Infinity.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
+builder.Services.AddScoped<IStringService, StringService>();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDbContext<LocationsDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("LocationsConnection")));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<LocationsDbContext>();
+
+    // AppDbContext — EnsureCreated is fine here, no migrations on this context
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.EnsureCreatedAsync();
-    
+
+    // LocationsDbContext — MigrateAsync only, no EnsureCreatedAsync
+    var locationsDb = scope.ServiceProvider.GetRequiredService<LocationsDbContext>();
+    await locationsDb.Database.MigrateAsync();
+    await LocationsDbSeeder.SeedAsync(locationsDb);
+
     app.MapOpenApi();
     app.UseSwaggerUI(options =>
     {
@@ -28,7 +37,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.MapControllers();
-
 app.Run();

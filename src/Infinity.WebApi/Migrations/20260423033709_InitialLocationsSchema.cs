@@ -15,7 +15,7 @@ namespace Infinity.WebApi.Migrations
                 name: "categories",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    id = table.Column<string>(type: "varchar(50)", nullable: false),
                     name = table.Column<string>(type: "varchar(50)", nullable: false),
                     description = table.Column<string>(type: "text", nullable: true)
                 },
@@ -28,7 +28,7 @@ namespace Infinity.WebApi.Migrations
                 name: "parks",
                 columns: table => new
                 {
-                    id = table.Column<string>(type: "varchar(20)", nullable: false),
+                    id = table.Column<string>(type: "varchar(50)", nullable: false),
                     name = table.Column<string>(type: "varchar(255)", nullable: false),
                     resort = table.Column<string>(type: "varchar(255)", nullable: true),
                     city = table.Column<string>(type: "varchar(100)", nullable: true),
@@ -45,8 +45,8 @@ namespace Infinity.WebApi.Migrations
                 name: "attractions",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
-                    park_id = table.Column<string>(type: "varchar(20)", nullable: false),
+                    id = table.Column<string>(type: "varchar(50)", nullable: false),
+                    park_id = table.Column<string>(type: "varchar(50)", nullable: false),
                     name = table.Column<string>(type: "varchar(255)", nullable: false),
                     description = table.Column<string>(type: "text", nullable: true),
                     lat = table.Column<decimal>(type: "numeric(9,6)", nullable: true),
@@ -72,8 +72,8 @@ namespace Infinity.WebApi.Migrations
                 name: "attraction_categories",
                 columns: table => new
                 {
-                    attraction_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    category_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    attraction_id = table.Column<string>(type: "varchar(50)", nullable: false),
+                    category_id = table.Column<string>(type: "varchar(50)", nullable: false)
                 },
                 constraints: table =>
                 {
