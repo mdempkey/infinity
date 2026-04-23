@@ -4,5 +4,5 @@ namespace Infinity.WebApplication.Services.Home;
 
 public interface IIndexContentService
 {
-    IndexViewModel BuildIndexViewModel();
+    Task<IndexViewModel> BuildIndexViewModelAsync();
 }
