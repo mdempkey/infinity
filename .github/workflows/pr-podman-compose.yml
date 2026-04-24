@@ -25,6 +25,11 @@ jobs:
       - name: Run WebApi tests
         run: dotnet test Infinity.WebApi.Tests/Infinity.WebApi.Tests.csproj --configuration Release
 
+      - name: Run WebApplication tests
+        env:
+          Mapbox__AccessToken: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
+        run: dotnet test Infinity.WebApplication.Tests/Infinity.WebApplication.Tests.csproj --configuration Release
+
       - name: Install Podman
         run: |
           sudo apt-get update
