@@ -6,6 +6,7 @@
       dockerfile: Infinity.WebApi/Dockerfile
     environment:
       - ConnectionStrings__DefaultConnection=Host=db;Database=infinity;Username=postgres;Password=postgres
+      - ConnectionStrings__LocationsConnection=Host=db;Database=infinity;Username=postgres;Password=postgres
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:8080
     depends_on:
