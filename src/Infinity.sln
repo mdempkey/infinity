@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infinity.WebApi.Tests", "In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infinity.WebApplication", "Infinity.WebApplication\Infinity.WebApplication.csproj", "{90574B36-62F6-4B11-9C52-2BDE45804058}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infinity.WebApplication.Tests", "Infinity.WebApplication.Tests\Infinity.WebApplication.Tests.csproj", "{82742465-CBF1-40E9-8BBE-AEE623DC89FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{90574B36-62F6-4B11-9C52-2BDE45804058}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90574B36-62F6-4B11-9C52-2BDE45804058}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90574B36-62F6-4B11-9C52-2BDE45804058}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82742465-CBF1-40E9-8BBE-AEE623DC89FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82742465-CBF1-40E9-8BBE-AEE623DC89FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82742465-CBF1-40E9-8BBE-AEE623DC89FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82742465-CBF1-40E9-8BBE-AEE623DC89FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

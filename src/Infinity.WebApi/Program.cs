@@ -8,9 +8,6 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddScoped<IStringService, StringService>();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.AddDbContext<LocationsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("LocationsConnection")));
 
@@ -20,11 +17,6 @@ if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
 
-    // AppDbContext — EnsureCreated is fine here, no migrations on this context
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await db.Database.EnsureCreatedAsync();
-
-    // LocationsDbContext — MigrateAsync only, no EnsureCreatedAsync
     var locationsDb = scope.ServiceProvider.GetRequiredService<LocationsDbContext>();
     await locationsDb.Database.MigrateAsync();
     await LocationsDbSeeder.SeedAsync(locationsDb);
