@@ -1,45 +1,33 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Infinity.WebApi.Data;
-using Infinity.WebApi.Models;
+using Infinity.WebApplication.Models;
+using Infinity.WebApplication.Services.UserService;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Infinity.WebApi.Controllers;
+
+namespace Infinity.WebApplication.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IUserService _userService;
     private readonly IConfiguration _config;
 
-    public AuthController(AppDbContext context, IConfiguration config)
+    public AuthController(IUserService userService, IConfiguration config)
     {
-        _context = context;
+        _userService = userService;
         _config = config;
     }
 
     [HttpPost("register")]
     public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request)
     {
-        if (await _context.Users.AnyAsync(u => u.Email == request.Email))
-            return BadRequest("Email already in use.");
-
-        if (await _context.Users.AnyAsync(u => u.Username == request.Username))
-            return BadRequest("Username already taken.");
-
-        var user = new User
-        {
-            Username = request.Username,
-            Email = request.Email,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
-        };
-
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        var user = await _userService.RegisterAsync(request.Username, request.Email, request.Password);
+        if (user is null)
+            return BadRequest("Username or email already in use.");
 
         return Ok(new AuthResponse(GenerateToken(user), user.Username));
     }
@@ -47,10 +35,9 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
     {
-        var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == request.Email);
-
-        if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-            return Unauthorized("Invalid email or password.");
+        var user = await _userService.LoginAsync(request.Username, request.Password);
+        if (user is null)
+            return Unauthorized("Invalid username or password.");
 
         return Ok(new AuthResponse(GenerateToken(user), user.Username));
     }

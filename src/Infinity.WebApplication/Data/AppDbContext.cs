@@ -1,4 +1,4 @@
-﻿using Infinity.WebApi.Models;
+﻿using Infinity.WebApplication.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infinity.WebApi.Data;
