@@ -17,18 +17,16 @@ namespace Infinity.WebApi.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.3")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Infinity.WebApi.Models.Attraction", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("id");
 
                     b.Property<decimal>("AvgRating")
                         .ValueGeneratedOnAdd()
@@ -65,7 +63,7 @@ namespace Infinity.WebApi.Migrations
 
                     b.Property<string>("ParkId")
                         .IsRequired()
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("park_id");
 
                     b.Property<int>("ReviewCount")
@@ -88,12 +86,12 @@ namespace Infinity.WebApi.Migrations
 
             modelBuilder.Entity("Infinity.WebApi.Models.AttractionCategory", b =>
                 {
-                    b.Property<Guid>("AttractionId")
-                        .HasColumnType("uuid")
+                    b.Property<string>("AttractionId")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("attraction_id");
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uuid")
+                    b.Property<string>("CategoryId")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("category_id");
 
                     b.HasKey("AttractionId", "CategoryId");
@@ -105,11 +103,9 @@ namespace Infinity.WebApi.Migrations
 
             modelBuilder.Entity("Infinity.WebApi.Models.Category", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("id");
 
                     b.Property<string>("Description")
                         .HasColumnType("text")
@@ -131,7 +127,7 @@ namespace Infinity.WebApi.Migrations
             modelBuilder.Entity("Infinity.WebApi.Models.Park", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("id");
 
                     b.Property<string>("City")

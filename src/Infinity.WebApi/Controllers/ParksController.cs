@@ -34,44 +34,4 @@ public class ParksController : ControllerBase, IParksController
 
         return park;
     }
-
-    [HttpPost("")]
-    public async Task<ActionResult<Park>> AddPark(Park park)
-    {
-        _context.Parks.Add(park);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetPark), new { id = park.Id }, park);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> EditPark(string id, Park park)
-    {
-        if (id != park.Id) return BadRequest();
-
-        _context.Entry(park).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!_context.Parks.Any(u => u.Id == id)) return NotFound();
-            throw;
-        }
-
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeletePark(string id)
-    {
-        var park = await _context.Parks.FindAsync(id);
-        if (park == null) return NotFound();
-
-        _context.Parks.Remove(park);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
 }
