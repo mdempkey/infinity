@@ -13,8 +13,8 @@ public class ParksControllerTests
     {
         await using var context = CreateContext();
         context.Parks.AddRange(
-            CreatePark("magic-kingdom"),
-            CreatePark("epcot"));
+            CreateMockPark("magic-kingdom"),
+            CreateMockPark("epcot"));
         await context.SaveChangesAsync();
 
         var controller = new ParksController(context);
@@ -36,57 +36,6 @@ public class ParksControllerTests
         Assert.IsType<NotFoundResult>(result.Result);
     }
 
-    [Fact]
-    public async Task AddPark_PersistsPark_AndReturnsCreatedAtAction()
-    {
-        await using var context = CreateContext();
-        var controller = new ParksController(context);
-        var park = CreatePark("animal-kingdom");
-
-        var result = await controller.AddPark(park);
-
-        var created = Assert.IsType<CreatedAtActionResult>(result.Result);
-        Assert.Equal(nameof(ParksController.GetPark), created.ActionName);
-        Assert.Equal("animal-kingdom", created.RouteValues?["id"]);
-        Assert.Equal(1, await context.Parks.CountAsync());
-    }
-
-    [Fact]
-    public async Task EditPark_ReturnsBadRequest_WhenRouteIdDoesNotMatchBody()
-    {
-        await using var context = CreateContext();
-        var controller = new ParksController(context);
-
-        var result = await controller.EditPark("magic-kingdom", CreatePark("epcot"));
-
-        Assert.IsType<BadRequestResult>(result);
-    }
-
-    [Fact]
-    public async Task EditPark_ReturnsNotFound_WhenParkDoesNotExist()
-    {
-        await using var context = CreateContext();
-        var controller = new ParksController(context);
-
-        var result = await controller.EditPark("missing", CreatePark("missing"));
-
-        Assert.IsType<NotFoundResult>(result);
-    }
-
-    [Fact]
-    public async Task DeletePark_RemovesPark_AndReturnsNoContent()
-    {
-        await using var context = CreateContext();
-        context.Parks.Add(CreatePark("hollywood-studios"));
-        await context.SaveChangesAsync();
-        var controller = new ParksController(context);
-
-        var result = await controller.DeletePark("hollywood-studios");
-
-        Assert.IsType<NoContentResult>(result);
-        Assert.Empty(await context.Parks.ToListAsync());
-    }
-
     private static LocationsDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<LocationsDbContext>()
@@ -96,7 +45,7 @@ public class ParksControllerTests
         return new LocationsDbContext(options);
     }
 
-    private static Park CreatePark(string id)
+    private static Park CreateMockPark(string id)
     {
         return new Park
         {

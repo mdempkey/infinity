@@ -12,9 +12,9 @@ public class HomeController : Controller
         _indexContentService = indexContentService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View(_indexContentService.BuildIndexViewModel());
+        return View(await _indexContentService.BuildIndexViewModelAsync());
     }
 
     public IActionResult Disneyland()

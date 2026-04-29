@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
+builder.Services.AddScoped<IStringService, StringService>();
 
 // Existing services
 builder.Services.AddScoped<IStringService, StringService>();
@@ -29,7 +30,6 @@ if (app.Environment.IsDevelopment())
     var locationsDb = scope.ServiceProvider.GetRequiredService<LocationsDbContext>();
     await locationsDb.Database.MigrateAsync();
     await LocationsDbSeeder.SeedAsync(locationsDb);
-    
 
     app.MapOpenApi();
     app.UseSwaggerUI(options =>
@@ -41,4 +41,3 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.MapControllers();
 app.Run();
-
