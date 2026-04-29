@@ -8,7 +8,7 @@ services:
       - ConnectionStrings__LocationsConnection=Host=db;Database=infinity;Username=postgres;Password=postgres
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:8080
-      - Jwt__Key=DNIIf59TfeNh4kuORVnmrsK7zfk+afWQdzG/6P6j8UA=
+      - Jwt__Key=${JWT_SIGNING_KEY}
     depends_on:
       db:
         condition: service_healthy
@@ -46,7 +46,7 @@ services:
       - Mapbox__AccessToken=${MAPBOX_ACCESS_TOKEN}
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:8080
-      - Jwt__Key=DNIIf59TfeNh4kuORVnmrsK7zfk+afWQdzG/6P6j8UA=
+      - Jwt__Key=${JWT_SIGNING_KEY}
     depends_on:
       infinity.webapi:
         condition: service_started

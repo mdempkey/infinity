@@ -43,7 +43,7 @@ builder.Services.AddDbContext<LocationsDbContext>(options =>
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrWhiteSpace(jwtKey))
-    throw new InvalidOperationException("Jwt:Key must be set via the JWT__Key environment variable.");
+    throw new InvalidOperationException("Jwt:Key must be set via the JWT_SIGNING_KEY environment variable.");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
