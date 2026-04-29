@@ -1,5 +1,7 @@
 using Infinity.WebApplication.Data;
 using Infinity.WebApplication.Services.Home;
+using Infinity.WebApplication.Services.RatingService;
+using Infinity.WebApplication.Services.ReviewService;
 using Infinity.WebApplication.Services.UserService;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
@@ -21,6 +23,8 @@ builder.Services.AddDbContext<UserDbContext>(options =>
         ?? throw new InvalidOperationException("UserConnection is not configured.")));
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRatingService, RatingService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
