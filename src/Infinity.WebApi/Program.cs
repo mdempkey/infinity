@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Infinity.WebApi.Data;
 using Infinity.WebApi.Services;
 using Infinity.WebApi.Settings;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
