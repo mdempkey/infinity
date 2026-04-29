@@ -1,11 +1,13 @@
 using Infinity.WebApi.Services;
 using Infinity.WebApi.Settings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
 namespace Infinity.WebApi.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/attractions")]
 public class ImagesController : ControllerBase
 {

@@ -1,4 +1,5 @@
 using Infinity.WebApplication.Data;
+using Infinity.WebApplication.Services.Auth;
 using Infinity.WebApplication.Services.Home;
 using Infinity.WebApplication.Services.UserService;
 using Microsoft.EntityFrameworkCore;
@@ -10,11 +11,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddSingleton<IServiceTokenProvider, ServiceTokenProvider>();
+builder.Services.AddTransient<ServiceTokenHandler>();
+
 builder.Services.AddHttpClient<IIndexContentService, IndexContentService>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["InfinityApi:BaseUrl"]
         ?? throw new InvalidOperationException("InfinityApi:BaseUrl is not configured."));
-});
+})
+.AddHttpMessageHandler<ServiceTokenHandler>();
 
 builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("UserConnection")
@@ -40,7 +45,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
-// Apply user DB migrations on startup
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<UserDbContext>();
