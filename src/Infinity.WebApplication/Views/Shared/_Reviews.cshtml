@@ -1,5 +1,5 @@
 <section class="attraction-widget__reviews mt-3 pt-3 border-top border-secondary-subtle" aria-label="Reviews">
-    <h3 class="h6 text-uppercase text-warning mb-2">Reviews</h3>
+    <h3 class="h6 text-uppercase text-primary mb-2">Reviews</h3>
     <div id="attraction-widget-reviews-list"></div>
 
     @if (User?.Identity?.IsAuthenticated ?? false)
@@ -11,7 +11,7 @@
                       rows="4"
                       maxlength="1200"
                       placeholder="Share your experience..."></textarea>
-            <button type="button" class="btn btn-warning btn-sm fw-semibold mt-2">Submit Review</button>
+            <button type="button" class="btn btn-sm fw-semibold mt-2">Submit Review</button>
         </form>
     }
     else

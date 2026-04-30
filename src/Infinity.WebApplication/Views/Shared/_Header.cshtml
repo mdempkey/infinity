@@ -1,0 +1,12 @@
+<header class="site-navbar navbar navbar-expand sticky-top px-4 px-md-5 py-3 border-bottom border-secondary-subtle">
+    <a class="site-title navbar-brand p-0 m-0" asp-controller="Home" asp-action="Index" aria-label="Infinity Site home">
+        <span class="site-title__name">STAR WARS</span>
+        <span class="site-title__tag">Themed Attractions</span>
+    </a>
+    <nav class="ms-auto d-flex gap-3 align-items-center justify-content-end">
+        <button type="button" class="btn btn-link btn-sm p-0" onclick="showLoginModal()">Log In</button>
+        <button type="button" class="btn btn-link btn-sm p-0" onclick="showLoginModal()">Sign Up</button>
+    </nav>
+</header>
+
+<partial name="_LoginModal" />
