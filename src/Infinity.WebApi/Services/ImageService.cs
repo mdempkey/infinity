@@ -17,8 +17,6 @@ public sealed class ImageService : IImageService
         _logger = logger;
         _allowedExtensions = options.Value.AllowedExtensions;
 
-        // Resolve storage root relative to the application's content root when
-        // the configured path is not already absolute.
         var configured = options.Value.StoragePath;
         _rootPath = Path.IsPathRooted(configured)
             ? configured
@@ -27,18 +25,18 @@ public sealed class ImageService : IImageService
         Directory.CreateDirectory(_rootPath);
         _logger.LogInformation("Image storage root: {Root}", _rootPath);
     }
-    
-    public Task<bool> ImageExistsAsync(string fileName, CancellationToken ct = default)
+
+    public Task<bool> ImageExistsAsync(string filePath, CancellationToken ct = default)
     {
-        if (!TryResolveSafe(fileName, out var fullPath))
+        if (!TryResolveSafe(filePath, out var fullPath))
             return Task.FromResult(false);
 
         return Task.FromResult(File.Exists(fullPath));
     }
 
-    public Task<Stream?> GetImageAsync(string fileName, CancellationToken ct = default)
+    public Task<Stream?> GetImageAsync(string filePath, CancellationToken ct = default)
     {
-        if (!TryResolveSafe(fileName, out var fullPath) || !File.Exists(fullPath))
+        if (!TryResolveSafe(filePath, out var fullPath) || !File.Exists(fullPath))
             return Task.FromResult<Stream?>(null);
 
         Stream stream = new FileStream(
@@ -53,16 +51,19 @@ public sealed class ImageService : IImageService
     }
 
     public async Task<string> SaveImageAsync(
-        string fileName,
+        string filePath,
         Stream content,
         CancellationToken ct = default)
     {
-        if (!TryResolveSafe(fileName, out var fullPath))
-            throw new ArgumentException($"Invalid image file name: '{fileName}'.", nameof(fileName));
+        if (!TryResolveSafe(filePath, out var fullPath))
+            throw new ArgumentException($"Invalid image path: '{filePath}'.", nameof(filePath));
 
-        ValidateExtension(fileName);
+        ValidateExtension(filePath);
 
-        _logger.LogInformation("Saving image {FileName} to {Path}", fileName, fullPath);
+        var dir = Path.GetDirectoryName(fullPath)!;
+        Directory.CreateDirectory(dir);
+
+        _logger.LogInformation("Saving image {FilePath} to {FullPath}", filePath, fullPath);
 
         await using var fs = new FileStream(
             fullPath,
@@ -74,19 +75,18 @@ public sealed class ImageService : IImageService
 
         await content.CopyToAsync(fs, ct);
 
-        // Return the URL fragment callers can persist in Attraction.ImageUrls.
-        return $"/api/attractions/image/{Uri.EscapeDataString(fileName)}";
+        return $"/api/attractions/image/{filePath.Replace('\\', '/')}";
     }
 
-    public Task DeleteImageAsync(string fileName, CancellationToken ct = default)
+    public Task DeleteImageAsync(string filePath, CancellationToken ct = default)
     {
-        if (!TryResolveSafe(fileName, out var fullPath))
+        if (!TryResolveSafe(filePath, out var fullPath))
             return Task.CompletedTask;
 
         if (File.Exists(fullPath))
         {
             File.Delete(fullPath);
-            _logger.LogInformation("Deleted image {FileName}", fileName);
+            _logger.LogInformation("Deleted image {FilePath}", filePath);
         }
 
         return Task.CompletedTask;
@@ -95,37 +95,36 @@ public sealed class ImageService : IImageService
     public Task<IReadOnlyList<string>> ListImagesAsync(CancellationToken ct = default)
     {
         var files = Directory
-            .EnumerateFiles(_rootPath)
-            .Select(Path.GetFileName)
-            .Where(n => n is not null)
-            .Cast<string>()
+            .EnumerateFiles(_rootPath, "*", SearchOption.AllDirectories)
+            .Select(f => Path.GetRelativePath(_rootPath, f).Replace('\\', '/'))
             .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
         return Task.FromResult<IReadOnlyList<string>>(files);
     }
 
-
-    private bool TryResolveSafe(string fileName, out string fullPath)
+    private bool TryResolveSafe(string filePath, out string fullPath)
     {
         fullPath = string.Empty;
 
-        if (string.IsNullOrWhiteSpace(fileName))
+        if (string.IsNullOrWhiteSpace(filePath))
             return false;
 
-        // GetFileName strips any leading directory component ("..", "/", etc.).
-        var bare = Path.GetFileName(fileName);
-        if (string.IsNullOrEmpty(bare))
-            return false;
-
-        var candidate = Path.GetFullPath(Path.Combine(_rootPath, bare));
-
-        // Ensure the resolved path is inside the storage root.
-        if (!candidate.StartsWith(_rootPath, StringComparison.OrdinalIgnoreCase))
+        if (filePath.Contains('\\') || filePath.Contains("..") || filePath.StartsWith('/'))
         {
             _logger.LogWarning(
-                "Path traversal attempt detected. fileName='{FileName}' resolved='{Candidate}'",
-                fileName, candidate);
+                "Unsafe path rejected: '{FilePath}'", filePath);
+            return false;
+        }
+
+        var candidate = Path.GetFullPath(Path.Combine(_rootPath, filePath));
+
+        var root = _rootPath.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
+        if (!candidate.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogWarning(
+                "Path traversal attempt: '{FilePath}' resolved to '{Candidate}'",
+                filePath, candidate);
             return false;
         }
 
@@ -133,9 +132,9 @@ public sealed class ImageService : IImageService
         return true;
     }
 
-    private void ValidateExtension(string fileName)
+    private void ValidateExtension(string filePath)
     {
-        var ext = Path.GetExtension(fileName).ToLowerInvariant();
+        var ext = Path.GetExtension(filePath).ToLowerInvariant();
         if (!_allowedExtensions.Contains(ext))
             throw new NotSupportedException(
                 $"File extension '{ext}' is not allowed. Permitted: {string.Join(", ", _allowedExtensions)}");
