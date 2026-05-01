@@ -34,8 +34,15 @@ jobs:
       - name: Install podman-compose
         run: pip install podman-compose
 
-      - name: Log in to ghcr.io
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Pull base images
+        run: |
+          for image in mcr.microsoft.com/dotnet/aspnet:10.0 mcr.microsoft.com/dotnet/sdk:10.0; do
+            for i in 1 2 3; do
+              podman pull "$image" && break
+              echo "Attempt $i failed for $image, retrying in 15s..."
+              sleep 15
+            done
+          done
 
       - name: Build containers
         run: podman compose -f compose.yaml build
