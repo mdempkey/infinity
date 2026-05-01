@@ -4,9 +4,16 @@
         <span class="site-title__tag">Themed Attractions</span>
     </a>
     <nav class="ms-auto d-flex gap-3 align-items-center justify-content-end">
-        <button type="button" class="btn btn-link btn-sm p-0" onclick="showLoginModal()">Log In</button>
-        <button type="button" class="btn btn-link btn-sm p-0" onclick="showLoginModal()">Sign Up</button>
+        <div id="nav-logged-out" class="d-flex gap-3 align-items-center">
+            <button type="button" class="btn btn-link btn-sm p-0" onclick="showLoginModal()">Log In</button>
+            <button type="button" class="btn btn-link btn-sm p-0" onclick="showSignUpModal()">Sign Up</button>
+        </div>
+        <div id="nav-logged-in" class="d-none gap-3 align-items-center">
+            <span id="nav-username" class="text-secondary fw-bold small"></span>
+            <button type="button" class="btn btn-link btn-sm p-0" onclick="logout()">Log Out</button>
+        </div>
     </nav>
 </header>
 
 <partial name="_LoginModal" />
+<partial name="_SignUpModal" />
