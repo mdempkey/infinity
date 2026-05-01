@@ -17,6 +17,7 @@ public class ImagesController : ControllerBase
             { ".png",  "image/png"  },
             { ".webp", "image/webp" },
             { ".gif",  "image/gif"  },
+            { ".avif", "image/avif" },
         };
 
     private readonly IImageService _images;
@@ -33,41 +34,35 @@ public class ImagesController : ControllerBase
         _logger  = logger;
     }
 
- 
-    /// Serves the raw binary of a named attraction image.
-  
-    [HttpGet("image/{fileName}")]
+    [HttpGet("image/{*filePath}")]
     [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-    public async Task<IActionResult> GetImage(string fileName, CancellationToken ct)
+    public async Task<IActionResult> GetImage(string filePath, CancellationToken ct)
     {
-        if (!IsValidFileName(fileName))
+        if (!IsValidFilePath(filePath))
             return BadRequest(Problem(
-                title:  "Invalid file name",
-                detail: "The file name must not contain path separators or be empty.",
+                title:  "Invalid file path",
+                detail: "The path must not contain '..' or backslashes, and must not be empty.",
                 statusCode: StatusCodes.Status400BadRequest));
 
-        var ext = Path.GetExtension(fileName).ToLowerInvariant();
+        var ext = Path.GetExtension(filePath).ToLowerInvariant();
         if (!MimeTypes.TryGetValue(ext, out var mimeType))
             return StatusCode(StatusCodes.Status415UnsupportedMediaType, Problem(
                 title:  "Unsupported media type",
                 detail: $"Extension '{ext}' is not supported. Supported: {string.Join(", ", MimeTypes.Keys)}",
                 statusCode: StatusCodes.Status415UnsupportedMediaType));
 
-        var stream = await _images.GetImageAsync(fileName, ct);
+        var stream = await _images.GetImageAsync(filePath, ct);
         if (stream is null)
             return NotFound(Problem(
                 title:  "Image not found",
-                detail: $"No image named '{fileName}' exists in storage.",
+                detail: $"No image at '{filePath}' exists in storage.",
                 statusCode: StatusCodes.Status404NotFound));
 
         return File(stream, mimeType, enableRangeProcessing: true);
     }
-
-
-    /// Returns a list of all image file names currently in storage.
 
     [HttpGet("images")]
     [ProducesResponseType(typeof(IReadOnlyList<string>), StatusCodes.Status200OK)]
@@ -77,25 +72,21 @@ public class ImagesController : ControllerBase
         return Ok(names);
     }
 
-  
-    /// Uploads and stores a new attraction image.
-    /// Overwrites an existing image of the same name.
-    
-    [HttpPost("image/{fileName}")]
+    [HttpPost("image/{*filePath}")]
     [ProducesResponseType(typeof(ImageUploadResult), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status413RequestEntityTooLarge)]
     [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-    [RequestSizeLimit(20 * 1024 * 1024)] // 20 MB framework ceiling
-    public async Task<IActionResult> UploadImage(string fileName, CancellationToken ct)
+    [RequestSizeLimit(20 * 1024 * 1024)]
+    public async Task<IActionResult> UploadImage(string filePath, CancellationToken ct)
     {
-        if (!IsValidFileName(fileName))
+        if (!IsValidFilePath(filePath))
             return BadRequest(Problem(
-                title:  "Invalid file name",
-                detail: "The file name must not contain path separators or be empty.",
+                title:  "Invalid file path",
+                detail: "The path must not contain '..' or backslashes, and must not be empty.",
                 statusCode: StatusCodes.Status400BadRequest));
 
-        var ext = Path.GetExtension(fileName).ToLowerInvariant();
+        var ext = Path.GetExtension(filePath).ToLowerInvariant();
         if (!MimeTypes.ContainsKey(ext))
             return StatusCode(StatusCodes.Status415UnsupportedMediaType, Problem(
                 title:  "Unsupported media type",
@@ -108,48 +99,43 @@ public class ImagesController : ControllerBase
                 detail: $"Maximum allowed size is {_options.MaxFileSizeBytes / 1024 / 1024} MB.",
                 statusCode: StatusCodes.Status413RequestEntityTooLarge));
 
-        var urlFragment = await _images.SaveImageAsync(fileName, Request.Body, ct);
+        var urlFragment = await _images.SaveImageAsync(filePath, Request.Body, ct);
 
         _logger.LogInformation(
-            "Image uploaded: {FileName} from {RemoteIp}",
-            fileName, HttpContext.Connection.RemoteIpAddress);
+            "Image uploaded: {FilePath} from {RemoteIp}",
+            filePath, HttpContext.Connection.RemoteIpAddress);
 
         return CreatedAtAction(
             nameof(GetImage),
-            new { fileName },
-            new ImageUploadResult(fileName, urlFragment));
+            new { filePath },
+            new ImageUploadResult(filePath, urlFragment));
     }
 
-    
-    /// Deletes a stored attraction image. Returns 204 whether or not it existed.
-   
-    [HttpDelete("image/{fileName}")]
+    [HttpDelete("image/{*filePath}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> DeleteImage(string fileName, CancellationToken ct)
+    public async Task<IActionResult> DeleteImage(string filePath, CancellationToken ct)
     {
-        if (!IsValidFileName(fileName))
+        if (!IsValidFilePath(filePath))
             return BadRequest(Problem(
-                title:  "Invalid file name",
-                detail: "The file name must not contain path separators or be empty.",
+                title:  "Invalid file path",
+                detail: "The path must not contain '..' or backslashes, and must not be empty.",
                 statusCode: StatusCodes.Status400BadRequest));
 
-        await _images.DeleteImageAsync(fileName, ct);
+        await _images.DeleteImageAsync(filePath, ct);
         return NoContent();
     }
-
-    private static bool IsValidFileName(string? name)
+    
+    private static bool IsValidFilePath(string? path)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(path))
             return false;
 
-        if (name.Contains('/') || name.Contains('\\'))
+        if (path.Contains('\\') || path.Contains("..") || path.StartsWith('/'))
             return false;
 
-        var bare = Path.GetFileName(name);
-        return !string.IsNullOrEmpty(bare) &&
-               string.Equals(bare, name, StringComparison.Ordinal);
+        return Path.GetFileName(path).Length > 0;
     }
 }
 
-public sealed record ImageUploadResult(string FileName, string Url);
+public sealed record ImageUploadResult(string FilePath, string Url);
