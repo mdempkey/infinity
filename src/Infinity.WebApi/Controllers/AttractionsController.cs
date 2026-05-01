@@ -1,11 +1,13 @@
 using Infinity.WebApi.Data;
 using Infinity.WebApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infinity.WebApi.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class AttractionsController : ControllerBase, IAttractionsController
 {
