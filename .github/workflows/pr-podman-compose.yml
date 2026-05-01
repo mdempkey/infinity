@@ -31,10 +31,8 @@ jobs:
           Mapbox__AccessToken: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
         run: dotnet test Infinity.WebApplication.Tests/Infinity.WebApplication.Tests.csproj --configuration Release
 
-      - name: Install Podman
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y podman podman-compose
+      - name: Install podman-compose
+        run: pip install podman-compose
 
       - name: Build containers
         run: podman compose -f compose.yaml build
@@ -70,11 +68,6 @@ jobs:
             podman compose -f compose.yaml logs
             exit 1
           fi
-
-      - name: Build website
-        env:
-          Mapbox__AccessToken: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
-        run: dotnet build Infinity.WebApplication/Infinity.WebApplication.csproj --configuration Release
 
       - name: Print logs on failure
         if: failure()
