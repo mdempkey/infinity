@@ -19,10 +19,6 @@
             overflow: hidden;
         }
 
-        body:has(.park-detail-page) {
-            overflow: hidden;
-        }
-
         .site-navbar {
             backdrop-filter: blur(12px);
             z-index: 10;
@@ -140,7 +136,7 @@
 
         .home-page__reset {
             --bs-btn-bg: rgba(12, 17, 28, 0.9);
-            --bs-btn-border-color: rgba(255, 255, 255, 0.08);
+            --bs-btn-border-color: rgba(60, 60, 60, 1);
             --bs-btn-color: #c7cedb;
             --bs-btn-hover-color: #c7cedb;
             --bs-btn-hover-bg: rgba(12, 17, 28, 0.9);
@@ -206,18 +202,6 @@
             position: absolute;
             top: 14px;
             right: 14px;
-            width: 34px;
-            height: 34px;
-            line-height: 1;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-        }
-
-        .attraction-widget__close-glyph {
-            display: inline-block;
-            transform: translateY(-1px);
         }
 
         .attraction-widget__rating {
@@ -229,7 +213,7 @@
             position: relative;
             z-index: 2;
             margin: 0 auto;
-            padding: 40px;
+            padding: 24px 40px 0;
             height: calc(100vh - 81px);
             display: flex;
             justify-content: flex-end;
@@ -239,6 +223,7 @@
 
         .home-hero {
             width: min(420px, 100%);
+            height: 100%;
             max-height: 100%;
         }
 
@@ -275,10 +260,6 @@
 
         .attraction-panel {
             display: none;
-        }
-
-        .home-page.is-park-focused .location-panel {
-            overflow: hidden;
         }
 
         .home-page.is-park-focused .location-panel--parks {
@@ -352,21 +333,6 @@
             margin-top: 16px;
         }
 
-        .park-detail-page {
-            max-width: 840px;
-            margin: 0 auto;
-            padding: 48px 20px 0;
-            height: calc(100vh - 81px);
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-
-        .park-detail-page::-webkit-scrollbar {
-            display: none;
-        }
-
         .park-header {
             margin: 16px 0 28px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -389,6 +355,8 @@
         .star-rating {
             color: #ffc107;
             font-size: 1.05rem;
+            margin-top: 8px;
+            margin-bottom: 8px;
         }
 
         .star-rating--five {
@@ -396,7 +364,6 @@
             align-items: center;
             line-height: 1;
             font-size: 1rem;
-            margin-top: 8px;
             gap: 0.4rem;
         }
 
@@ -500,13 +467,13 @@
             }
 
             .home-page {
-                height: calc(100vh - 73px);
-                min-height: calc(100vh - 73px);
+                height: 100%;
+                min-height: 100%;
             }
 
             .home-page__content {
-                padding-top: 32px;
-                height: calc(100vh - 73px);
+                padding-top: 18px;
+                height: 100%;
             }
 
             .home-page__reset {
@@ -534,10 +501,6 @@
                 width: 100%;
             }
 
-            .park-detail-page {
-                height: calc(100vh - 73px);
-            }
-
             .reviewer-info {
                 align-items: flex-start;
                 flex-wrap: wrap;
@@ -551,57 +514,11 @@
     </style>
 </head>
 <body>
-<header class="site-navbar navbar navbar-expand sticky-top px-4 px-md-5 py-3 border-bottom border-secondary-subtle">
-    <a class="site-title navbar-brand p-0 m-0" asp-controller="Home" asp-action="Index" aria-label="Star Wars Attractions home">
-        <span class="site-title__name">STAR WARS</span>
-        <span class="site-title__tag">Themed Attractions</span>
-    </a>
-    <nav class="ms-auto d-flex gap-3 align-items-center justify-content-end">
-        <button type="button" class="btn btn-link btn-sm p-0" onclick="showLoginModal()">Log In</button>
-        <button type="button" class="btn btn-link btn-sm p-0" onclick="showLoginModal()">Sign Up</button>
-    </nav>
-</header>
+<partial name="_Header" />
 <main>
         @RenderBody()
 </main>
-<div class="modal fade" id="login-modal" tabindex="-1" aria-labelledby="login-modal-title" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-light">
-            <div class="modal-header border-secondary-subtle">
-                <h5 class="modal-title text-warning" id="login-modal-title">Welcome to Star Wars Attractions</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p class="text-secondary mb-3">Log in to write rate attractions and write reviews.</p>
-                <form class="d-grid gap-2" onsubmit="event.preventDefault(); hideLoginModal();">
-                    <input type="email" placeholder="Email" class="form-control bg-dark text-light border-secondary" required />
-                    <input type="password" placeholder="Password" class="form-control bg-dark text-light border-secondary" required />
-                    <button type="submit" class="btn btn-warning w-100 mt-2">Log In</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    let loginModalInstance = null;
-
-    function showLoginModal() {
-        const modalElement = document.getElementById("login-modal");
-        if (!modalElement || !window.bootstrap) {
-            return;
-        }
-
-        loginModalInstance ??= window.bootstrap.Modal.getOrCreateInstance(modalElement);
-        loginModalInstance.show();
-    }
-
-    function hideLoginModal() {
-        if (loginModalInstance) {
-            loginModalInstance.hide();
-        }
-    }
-</script>
 <partial name="_StarRatingScript" />
 @await RenderSectionAsync("Scripts", required: false)
 </body>

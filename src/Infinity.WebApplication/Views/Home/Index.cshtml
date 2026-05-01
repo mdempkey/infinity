@@ -1,6 +1,6 @@
 @model Infinity.WebApplication.ViewModels.Home.IndexViewModel
 @{
-    ViewData["Title"] = "Star Wars Attractions";
+    ViewData["Title"] = "Infinity Site";
 }
 
 <section class="home-page">
@@ -19,7 +19,7 @@
                              aria-label="Focus @park.Title on map"
                              onclick="focusHomepagePark('@park.Id')"
                              onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); focusHomepagePark('@park.Id'); }">
-                        <h3 class="h5 text-warning mb-1">@park.Title</h3>
+                        <h3 class="h5 text-primary mb-1">@park.Title</h3>
                         <p class="text-secondary mb-0">@park.City, @park.Country</p>
                     </article>
                 }
