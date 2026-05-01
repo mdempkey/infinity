@@ -9,6 +9,7 @@ jobs:
     timeout-minutes: 20
     env:
       PODMAN_COMPOSE_PROVIDER: podman-compose
+      JWT_SIGNING_KEY: ${{ secrets.JWT_SIGNING_KEY }}
     defaults:
       run:
         working-directory: src
