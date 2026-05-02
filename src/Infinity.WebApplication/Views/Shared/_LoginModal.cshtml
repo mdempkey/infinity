@@ -7,9 +7,10 @@
             </div>
             <div class="modal-body">
                 <p class="text-secondary mb-3">Log in to rate attractions and write reviews.</p>
-                <form class="d-grid gap-2" onsubmit="event.preventDefault(); hideLoginModal();">
-                    <input type="email" placeholder="Email" class="form-control" required />
-                    <input type="password" placeholder="Password" class="form-control" required />
+                <form id="login-form" class="d-grid gap-2">
+                    <input type="text" id="login-username" placeholder="Username" class="form-control" required />
+                    <input type="password" id="login-password" placeholder="Password" class="form-control" required />
+                    <p id="login-error" class="text-danger small mb-0 d-none"></p>
                     <button type="submit" class="btn btn-primary w-100 mt-2">Log In</button>
                 </form>
             </div>
@@ -22,17 +23,51 @@
 
     function showLoginModal() {
         const modalElement = document.getElementById("login-modal");
-        if (!modalElement || !window.bootstrap) {
-            return;
+        if (!modalElement || !window.bootstrap) return;
+        if (!loginModalInstance) {
+            loginModalInstance = window.bootstrap.Modal.getOrCreateInstance(modalElement);
+            modalElement.addEventListener("hidden.bs.modal", () => {
+                document.getElementById("login-form").reset();
+            });
         }
-
-        loginModalInstance ??= window.bootstrap.Modal.getOrCreateInstance(modalElement);
+        const errorEl = document.getElementById("login-error");
+        if (errorEl) errorEl.classList.add("d-none");
         loginModalInstance.show();
     }
 
     function hideLoginModal() {
-        if (loginModalInstance) {
-            loginModalInstance.hide();
-        }
+        loginModalInstance?.hide();
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("login-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const username = document.getElementById("login-username").value;
+            const password = document.getElementById("login-password").value;
+            const errorEl = document.getElementById("login-error");
+
+            errorEl.classList.add("d-none");
+
+            try {
+                const res = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    saveAuth(data.token, data.username);
+                    updateHeader();
+                    hideLoginModal();
+                } else {
+                    errorEl.textContent = "Invalid username or password.";
+                    errorEl.classList.remove("d-none");
+                }
+            } catch {
+                errorEl.textContent = "A network error occurred. Please try again.";
+                errorEl.classList.remove("d-none");
+            }
+        });
+    });
 </script>

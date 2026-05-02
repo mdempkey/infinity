@@ -1,0 +1,75 @@
+<div class="modal fade" id="signup-modal" tabindex="-1" aria-labelledby="signup-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <button type="button" class="modal-close btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" id="signup-modal-title">Create an Account</h5>
+            </div>
+            <div class="modal-body">
+                <p class="text-secondary mb-3">Join to rate attractions and write reviews.</p>
+                <form id="signup-form" class="d-grid gap-2">
+                    <input type="text" id="signup-username" placeholder="Username" class="form-control" required />
+                    <input type="email" id="signup-email" placeholder="Email" class="form-control" required />
+                    <input type="password" id="signup-password" placeholder="Password" class="form-control" required />
+                    <p id="signup-error" class="text-danger small mb-0 d-none"></p>
+                    <button type="submit" class="btn btn-primary w-100 mt-2">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let signupModalInstance = null;
+
+    function showSignUpModal() {
+        const modalElement = document.getElementById("signup-modal");
+        if (!modalElement || !window.bootstrap) return;
+        if (!signupModalInstance) {
+            signupModalInstance = window.bootstrap.Modal.getOrCreateInstance(modalElement);
+            modalElement.addEventListener("hidden.bs.modal", () => {
+                document.getElementById("signup-form").reset();
+            });
+        }
+        const errorEl = document.getElementById("signup-error");
+        if (errorEl) errorEl.classList.add("d-none");
+        signupModalInstance.show();
+    }
+
+    function hideSignUpModal() {
+        signupModalInstance?.hide();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("signup-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const username = document.getElementById("signup-username").value;
+            const email = document.getElementById("signup-email").value;
+            const password = document.getElementById("signup-password").value;
+            const errorEl = document.getElementById("signup-error");
+
+            errorEl.classList.add("d-none");
+
+            try {
+                const res = await fetch("/api/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    saveAuth(data.token, data.username);
+                    updateHeader();
+                    hideSignUpModal();
+                } else {
+                    errorEl.textContent = "Username or email already in use.";
+                    errorEl.classList.remove("d-none");
+                }
+            } catch {
+                errorEl.textContent = "A network error occurred. Please try again.";
+                errorEl.classList.remove("d-none");
+            }
+        });
+    });
+</script>
