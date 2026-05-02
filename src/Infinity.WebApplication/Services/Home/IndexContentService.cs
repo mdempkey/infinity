@@ -37,6 +37,7 @@ public sealed class IndexContentService(IConfiguration configuration, HttpClient
                 Attractions = attractionsByPark.TryGetValue(p.Id, out var parkAttractions)
                     ? parkAttractions.Select(a => new AttractionViewModel
                     {
+                        Id = a.Id,
                         Title = a.Name,
                         Subtitle = a.Description ?? string.Empty,
                         Rating = (double)a.AvgRating,

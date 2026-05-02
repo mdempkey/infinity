@@ -28,6 +28,7 @@ public sealed class IndexContentServiceMock(IConfiguration configuration) : IInd
                     [
                         new AttractionViewModel
                         {
+                            Id = "galaxys-edge",
                             Title = "Star Wars: Galaxy's Edge",
                             Subtitle = "Immersive Batuu land experience",
                             Rating = 3.7,
@@ -44,6 +45,7 @@ public sealed class IndexContentServiceMock(IConfiguration configuration) : IInd
                         },
                         new AttractionViewModel
                         {
+                            Id = "rise-of-the-resistance",
                             Title = "Star Wars: Rise of the Resistance",
                             Subtitle = "Trackless dark ride adventure",
                             Rating = 4.5,
@@ -77,6 +79,7 @@ public sealed class IndexContentServiceMock(IConfiguration configuration) : IInd
                     [
                         new AttractionViewModel
                         {
+                            Id = "star-tours",
                             Title = "Star Tours: The Adventures Continue",
                             Subtitle = "3D motion simulator space flight",
                             Rating = 3.6,
@@ -85,6 +88,7 @@ public sealed class IndexContentServiceMock(IConfiguration configuration) : IInd
                         },
                         new AttractionViewModel
                         {
+                            Id = "hyperspace-mountain",
                             Title = "Hyperspace Mountain",
                             Subtitle = "High-speed indoor coaster",
                             Rating = 4.7,

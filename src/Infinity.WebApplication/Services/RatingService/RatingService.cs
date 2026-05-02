@@ -31,6 +31,14 @@ public sealed class RatingService(UserDbContext db) : IRatingService
         return rating;
     }
 
+    public async Task<int?> GetUserRatingValueAsync(Guid userId, Guid attractionId) =>
+        await db.Ratings
+            .Where(r => r.UserId == userId && r.AttractionId == attractionId)
+            .Select(r => (int?)r.Value)
+            .FirstOrDefaultAsync();
+
+    public async Task<int> GetAttractionRatingCountAsync(Guid attractionId) =>
+        await db.Ratings.CountAsync(r => r.AttractionId == attractionId);
 
     public async Task<double?> GetAttractionAverageAsync(Guid attractionId)
     {

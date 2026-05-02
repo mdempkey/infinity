@@ -9,6 +9,8 @@
         const getCloseButton = () => document.getElementById("attraction-widget-close");
         const getHomePage = () => document.querySelector(".home-page");
 
+        let currentAttractionId = null;
+
         const closeWidget = () => {
             const overlay = getOverlay();
             if (!overlay) {
@@ -17,9 +19,80 @@
 
             overlay.hidden = true;
             getHomePage()?.classList.remove("is-attraction-widget-open");
+            currentAttractionId = null;
         };
 
-        const openWidget = ({ parkTitle, parkLocation, attractionTitle, attractionSubtitle, attractionRating, attractionReviews }) => {
+        const handleRate = async (attractionId, value) => {
+            const token = window.getToken?.();
+            if (!token) throw new Error("not authenticated");
+
+            const res = await fetch("/api/ratings", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ attractionId, value })
+            });
+
+            if (!res.ok) throw new Error(`POST failed: ${res.status}`);
+
+            const data = await res.json();
+            const ratingNode = getRatingNode();
+            if (!ratingNode || currentAttractionId !== attractionId) return;
+
+            ratingNode.innerHTML = window.renderInteractiveStarRating?.({
+                attractionId,
+                average: data.newAverage,
+                count: data.newCount,
+                userRating: data.value,
+                interactive: true
+            }) ?? "";
+
+            const container = ratingNode.firstElementChild;
+            if (container) {
+                window.bindInteractiveStarRating?.(container, (v) => handleRate(attractionId, v));
+            }
+
+            const panelRating = document.querySelector(`[data-rating-container="${attractionId}"]`);
+            if (panelRating) {
+                panelRating.innerHTML = window.renderHomepageStarRating?.(data.newAverage) ?? "";
+            }
+        };
+
+        const fetchAndRenderRating = async (attractionId, initialAverage) => {
+            const token = window.getToken?.();
+            const headers = token ? { "Authorization": `Bearer ${token}` } : {};
+
+            try {
+                const res = await fetch(`/api/ratings/${attractionId}/mine`, { headers });
+                if (!res.ok) return;
+
+                const data = await res.json();
+                const ratingNode = getRatingNode();
+                if (!ratingNode || currentAttractionId !== attractionId) return;
+
+                const isLoggedIn = !!token;
+                ratingNode.innerHTML = window.renderInteractiveStarRating?.({
+                    attractionId,
+                    average: data.average ?? initialAverage,
+                    count: data.count,
+                    userRating: data.value,
+                    interactive: isLoggedIn
+                }) ?? "";
+
+                if (isLoggedIn) {
+                    const container = ratingNode.firstElementChild;
+                    if (container) {
+                        window.bindInteractiveStarRating?.(container, (v) => handleRate(attractionId, v));
+                    }
+                }
+            } catch {
+                // leave initial render in place silently
+            }
+        };
+
+        const openWidget = ({ parkTitle, parkLocation, attractionTitle, attractionSubtitle, attractionRating, attractionId, attractionReviews }) => {
             const overlay = getOverlay();
             const parkNode = getParkNode();
             const titleNode = getTitleNode();
@@ -30,14 +103,25 @@
                 return;
             }
 
+            currentAttractionId = attractionId;
+
             parkNode.textContent = `${parkTitle} - ${parkLocation}`;
             titleNode.textContent = attractionTitle;
-            ratingNode.innerHTML = window.renderHomepageStarRating?.(attractionRating) ?? "";
             subtitleNode.textContent = attractionSubtitle;
             reviewsListNode.innerHTML = window.renderHomepageAttractionReviews?.(attractionReviews) ?? "";
 
+            ratingNode.innerHTML = window.renderInteractiveStarRating?.({
+                attractionId,
+                average: attractionRating,
+                count: null,
+                userRating: null,
+                interactive: false
+            }) ?? "";
+
             overlay.hidden = false;
             getHomePage()?.classList.add("is-attraction-widget-open");
+
+            fetchAndRenderRating(attractionId, attractionRating);
         };
 
         const bindWidgetInteractions = () => {

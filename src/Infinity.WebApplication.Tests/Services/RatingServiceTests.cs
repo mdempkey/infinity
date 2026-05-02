@@ -168,4 +168,61 @@ public class RatingServiceTests
 
         Assert.That(result, Is.Null);
     }
+
+    [Test]
+    public async Task GetUserRatingValueAsync_WhenUserHasRated_ReturnsValue()
+    {
+        var user = await SeedUserAsync();
+        var attractionId = Guid.NewGuid();
+        await _sut.UpsertAsync(user.Id, attractionId, 3);
+
+        var result = await _sut.GetUserRatingValueAsync(user.Id, attractionId);
+
+        Assert.That(result, Is.EqualTo(3));
+    }
+
+    [Test]
+    public async Task GetUserRatingValueAsync_WhenUserHasNotRated_ReturnsNull()
+    {
+        var result = await _sut.GetUserRatingValueAsync(Guid.NewGuid(), Guid.NewGuid());
+
+        Assert.That(result, Is.Null);
+    }
+
+    [Test]
+    public async Task GetAttractionRatingCountAsync_WithRatings_ReturnsCount()
+    {
+        var user1 = await SeedUserAsync("1");
+        var user2 = await SeedUserAsync("2");
+        var attractionId = Guid.NewGuid();
+        await _sut.UpsertAsync(user1.Id, attractionId, 4);
+        await _sut.UpsertAsync(user2.Id, attractionId, 2);
+
+        var result = await _sut.GetAttractionRatingCountAsync(attractionId);
+
+        Assert.That(result, Is.EqualTo(2));
+    }
+
+    [Test]
+    public async Task GetAttractionRatingCountAsync_WithNoRatings_ReturnsZero()
+    {
+        var result = await _sut.GetAttractionRatingCountAsync(Guid.NewGuid());
+
+        Assert.That(result, Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task GetAttractionRatingCountAsync_OnlyCountsRatingsForSpecifiedAttraction()
+    {
+        var user1 = await SeedUserAsync("1");
+        var user2 = await SeedUserAsync("2");
+        var target = Guid.NewGuid();
+        var other = Guid.NewGuid();
+        await _sut.UpsertAsync(user1.Id, target, 4);
+        await _sut.UpsertAsync(user2.Id, other, 3);
+
+        var result = await _sut.GetAttractionRatingCountAsync(target);
+
+        Assert.That(result, Is.EqualTo(1));
+    }
 }

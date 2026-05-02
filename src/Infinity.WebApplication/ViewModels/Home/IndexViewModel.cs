@@ -26,6 +26,7 @@ public sealed class ParkViewModel
 
 public sealed class AttractionViewModel
 {
+    public required string Id { get; init; }
     public required string Title { get; init; }
     public required string Subtitle { get; init; }
     public required double Rating { get; init; }
