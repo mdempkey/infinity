@@ -34,8 +34,94 @@
             });
         };
 
+        const renderInteractiveStarRating = ({ attractionId, average, count, userRating, interactive }) => {
+            const filledValue = userRating != null ? userRating : normalizeRating(average ?? 0);
+            const normalizedFilled = normalizeRating(filledValue);
+
+            const fullFilled = Math.floor(normalizedFilled);
+            const hasHalfFilled = normalizedFilled % 1 > 0;
+
+            const starsHtml = Array.from({ length: 5 }, (_, i) => {
+                let starClass;
+                if (i < fullFilled) starClass = "star-rating__star--full";
+                else if (i === fullFilled && hasHalfFilled) starClass = "star-rating__star--half";
+                else starClass = "";
+
+                const classes = ["star-rating__star", starClass].filter(Boolean).join(" ");
+                const value = i + 1;
+
+                if (interactive) {
+                    return `<span class="${classes}" data-value="${value}" role="button" tabindex="0" aria-label="Rate ${value} star${value !== 1 ? "s" : ""}">★</span>`;
+                }
+                return `<span class="${classes}" aria-hidden="true">★</span>`;
+            }).join("");
+
+            const avgText = average != null ? Number(average).toFixed(1) : "…";
+            const countText = count != null ? String(count) : "…";
+            const label = interactive ? "group" : "img";
+
+            return `<div class="star-rating star-rating--five star-rating--widget"
+                         data-attraction-id="${attractionId}"
+                         data-average="${average ?? ""}"
+                         data-count="${count ?? ""}"
+                         data-user-rating="${userRating ?? ""}"
+                         role="${label}"
+                         aria-label="Rated ${avgText} out of 5">
+                <span class="star-rating__stars"${interactive ? "" : ' aria-hidden="true"'}>${starsHtml}</span>
+                <span class="star-rating__value">${avgText} (${countText})</span>
+            </div>`;
+        };
+
+        const bindInteractiveStarRating = (container, onRate) => {
+            const buttons = Array.from(container.querySelectorAll("[data-value]"));
+            if (buttons.length === 0) return;
+
+            const getSavedFill = () => {
+                const userRating = container.dataset.userRating !== "" ? Number(container.dataset.userRating) : null;
+                const avg = container.dataset.average !== "" ? Number(container.dataset.average) : 0;
+                return userRating ?? avg;
+            };
+
+            const updateFill = (fillValue) => {
+                const norm = normalizeRating(fillValue ?? 0);
+                const full = Math.floor(norm);
+                const hasHalf = norm % 1 > 0;
+                buttons.forEach((btn, i) => {
+                    btn.classList.remove("star-rating__star--full", "star-rating__star--half");
+                    if (i < full) btn.classList.add("star-rating__star--full");
+                    else if (i === full && hasHalf) btn.classList.add("star-rating__star--half");
+                });
+            };
+
+            const handleClick = async (btn) => {
+                const value = Number(btn.dataset.value);
+                const previousFill = getSavedFill();
+                updateFill(value);
+                try {
+                    await onRate(value);
+                    container.dataset.userRating = String(value);
+                } catch {
+                    updateFill(previousFill);
+                }
+            };
+
+            buttons.forEach((btn) => {
+                btn.addEventListener("mouseover", () => updateFill(Number(btn.dataset.value)));
+                btn.addEventListener("mouseout", () => updateFill(getSavedFill()));
+                btn.addEventListener("click", () => handleClick(btn));
+                btn.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleClick(btn);
+                    }
+                });
+            });
+        };
+
         window.renderHomepageStarRating = renderStarRating;
         window.hydrateStarRatings = hydrateStarRatings;
+        window.renderInteractiveStarRating = renderInteractiveStarRating;
+        window.bindInteractiveStarRating = bindInteractiveStarRating;
 
         if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", () => hydrateStarRatings());

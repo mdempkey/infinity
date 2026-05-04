@@ -19,6 +19,7 @@
             coordinates = new[] { park.Coordinates.Lng, park.Coordinates.Lat },
             attractions = park.Attractions.Select(attraction => new
             {
+                id = attraction.Id,
                 title = attraction.Title,
                 subtitle = attraction.Subtitle,
                 rating = attraction.Rating,
