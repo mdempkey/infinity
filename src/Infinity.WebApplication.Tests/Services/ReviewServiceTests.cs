@@ -51,6 +51,8 @@ public class ReviewServiceTests
         Assert.That(result.AttractionId, Is.EqualTo(attractionId));
         Assert.That(result.Content, Is.EqualTo("Great ride!"));
         Assert.That(await _db.Reviews.CountAsync(), Is.EqualTo(1));
+        Assert.That(result.ModifiedAt, Is.Not.EqualTo(default(DateTime)));
+        Assert.That(result.ModifiedAt.Kind, Is.EqualTo(DateTimeKind.Utc));
     }
 
     [Test]
@@ -108,16 +110,33 @@ public class ReviewServiceTests
     }
 
     [Test]
+    public async Task GetByAttractionAsync_PopulatesUserNavigationProperty()
+    {
+        var user = await SeedUserAsync();
+        var attractionId = Guid.NewGuid();
+        await _sut.AddAsync(user.Id, attractionId, "Hello");
+
+        var result = (await _sut.GetByAttractionAsync(attractionId)).ToList();
+
+        Assert.That(result, Has.Count.EqualTo(1));
+        Assert.That(result[0].User, Is.Not.Null);
+        Assert.That(result[0].User.Username, Is.EqualTo("testuser"));
+    }
+
+    [Test]
     public async Task EditAsync_OwnReview_UpdatesContentAndReturnsReview()
     {
         var user = await SeedUserAsync();
         var review = await _sut.AddAsync(user.Id, Guid.NewGuid(), "Original");
+        var originalModifiedAt = review.ModifiedAt;
 
+        await Task.Delay(20);
         var result = await _sut.EditAsync(review.Id, user.Id, "Updated");
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.Content, Is.EqualTo("Updated"));
         Assert.That((await _db.Reviews.FindAsync(review.Id))!.Content, Is.EqualTo("Updated"));
+        Assert.That(result.ModifiedAt, Is.GreaterThan(originalModifiedAt));
     }
 
     [Test]

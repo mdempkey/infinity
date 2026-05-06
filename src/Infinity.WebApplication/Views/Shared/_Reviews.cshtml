@@ -1,21 +1,22 @@
 <section class="attraction-widget__reviews mt-3 pt-3 border-top border-secondary-subtle" aria-label="Reviews">
     <h3 class="h6 text-uppercase text-primary mb-2">Reviews</h3>
     <div id="attraction-widget-reviews-list"></div>
-
-    @if (User?.Identity?.IsAuthenticated ?? false)
-    {
-        <form class="mt-3" novalidate>
-            <label class="form-label small text-secondary mb-2" for="attraction-widget-review-input">Add your review</label>
+    
+    <form class="mt-3" id="attraction-widget-review-form" novalidate hidden>
+        <div class="mb-2">
+            <label class="form-label small text-secondary" for="attraction-widget-review-input">Add your review</label>
             <textarea id="attraction-widget-review-input"
-                      class="form-control form-control-sm bg-dark-subtle text-light border-secondary"
+                      class="form-control bg-dark text-light border-secondary"
                       rows="4"
-                      maxlength="1200"
+                      maxlength="2000"
+                      style="resize: none;"
                       placeholder="Share your experience..."></textarea>
-            <button type="button" class="btn btn-sm fw-semibold mt-2">Submit Review</button>
-        </form>
-    }
-    else
-    {
-        <div class="alert alert-secondary py-2 px-3 mt-3 mb-0" role="note">You must be signed in to leave a review.</div>
-    }
+            <div class="form-text d-flex justify-content-between align-items-center mt-1"  aria-describedby="reviewCharacterCount"></div>
+            <div id="reviewCharacterCount" class="form-text text-light-emphasis">0/2000</div>
+        </div>
+        <button type="button" id="attraction-widget-review-submit" class="btn btn-sm fw-semibold">Submit Review</button>
+    </form>
+    <div id="attraction-widget-review-signin" class="alert alert-secondary py-2 px-3 mt-3 mb-0" role="note" hidden>
+        You must be signed in to leave a review.
+    </div>
 </section>

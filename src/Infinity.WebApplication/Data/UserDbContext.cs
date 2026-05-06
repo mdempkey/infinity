@@ -48,6 +48,7 @@ public class UserDbContext : DbContext
             e.Property(r => r.UserId).HasColumnName("user_id").IsRequired();
             e.Property(r => r.AttractionId).HasColumnName("attraction_id").IsRequired();
             e.Property(r => r.Content).HasColumnName("content").HasMaxLength(2000).IsRequired();
+            e.Property(r => r.ModifiedAt).HasColumnName("modified_at").HasColumnType("timestamp with time zone").IsRequired();
             e.HasIndex(r => r.AttractionId);
             e.HasOne(r => r.User).WithMany().HasForeignKey(r => r.UserId).OnDelete(DeleteBehavior.Cascade);
         });
