@@ -1,30 +1,72 @@
 <script>
     (() => {
-        const escapeHtml = (value) => String(value ?? "")
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll("\"", "&quot;")
-            .replaceAll("'", "&#39;");
-
         const renderReviews = (reviews) => {
+            const fragment = document.createDocumentFragment();
+
             if (!Array.isArray(reviews) || reviews.length === 0) {
-                return `<p class="small text-secondary mb-0">No reviews yet. Be the first to leave a review.</p>`;
+                const p = document.createElement("p");
+                p.className = "small text-secondary mb-0";
+                p.textContent = "No reviews yet. Be the first to leave a review.";
+                fragment.appendChild(p);
+                return fragment;
             }
 
-            const rows = reviews
-                .map((review) => `
-                    <article class="list-group-item bg-transparent text-light border-secondary-subtle px-0">
-                        <div class="d-flex justify-content-between gap-2 small text-secondary mb-1">
-                            <strong class="text-light">${escapeHtml(review.author)}</strong>
-                            <span>${escapeHtml(review.date)}</span>
-                        </div>
-                        <p class="mb-0 small text-light-emphasis">${escapeHtml(review.comment)}</p>
-                    </article>
-                `)
-                .join("");
+            const list = document.createElement("div");
+            list.className = "list-group list-group-flush mt-2";
 
-            return `<div class="list-group list-group-flush mt-2">${rows}</div>`;
+            for (const review of reviews) {
+                const article = document.createElement("article");
+                article.className = "list-group-item bg-transparent text-light border-secondary-subtle px-0";
+                article.dataset.reviewId = String(review.id);
+
+                const meta = document.createElement("div");
+                meta.className = "d-flex justify-content-between gap-2 small text-secondary mb-1";
+
+                const author = document.createElement("strong");
+                author.className = "text-light";
+                author.textContent = review.author;
+
+                const date = document.createElement("span");
+                date.textContent = review.date;
+
+                meta.appendChild(author);
+                meta.appendChild(date);
+
+                const content = document.createElement("p");
+                content.className = "mb-1 small text-light-emphasis";
+                content.dataset.reviewContent = "";
+                content.textContent = review.comment;
+
+                article.appendChild(meta);
+                article.appendChild(content);
+
+                if (review.isOwner) {
+                    const actions = document.createElement("div");
+                    actions.className = "d-flex gap-2 mt-1";
+                    actions.dataset.reviewActions = "";
+
+                    const editBtn = document.createElement("button");
+                    editBtn.type = "button";
+                    editBtn.className = "btn btn-link btn-sm p-0";
+                    editBtn.dataset.reviewAction = "edit";
+                    editBtn.textContent = "Edit";
+
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.type = "button";
+                    deleteBtn.className = "btn btn-link btn-sm p-0";
+                    deleteBtn.dataset.reviewAction = "delete";
+                    deleteBtn.textContent = "Delete";
+
+                    actions.appendChild(editBtn);
+                    actions.appendChild(deleteBtn);
+                    article.appendChild(actions);
+                }
+
+                list.appendChild(article);
+            }
+
+            fragment.appendChild(list);
+            return fragment;
         };
 
         window.renderHomepageAttractionReviews = renderReviews;

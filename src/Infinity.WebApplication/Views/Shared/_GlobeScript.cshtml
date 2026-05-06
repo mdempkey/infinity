@@ -141,8 +141,7 @@
                             attractionTitle: attraction.title,
                             attractionSubtitle: attraction.subtitle,
                             attractionRating: attraction.rating,
-                            attractionId: attraction.id,
-                            attractionReviews: attraction.reviews
+                            attractionId: attraction.id
                         });
                     });
 
@@ -232,8 +231,7 @@
                         attractionTitle: attraction.title,
                         attractionSubtitle: attraction.subtitle,
                         attractionRating: attraction.rating,
-                        attractionId: attraction.id,
-                        attractionReviews: attraction.reviews
+                        attractionId: attraction.id
                     });
                 };
 
@@ -248,6 +246,10 @@
 
                     const target = event.target;
                     if (!(target instanceof Element)) {
+                        return;
+                    }
+
+                    if (target.closest("textarea, input, select, [contenteditable]")) {
                         return;
                     }
 

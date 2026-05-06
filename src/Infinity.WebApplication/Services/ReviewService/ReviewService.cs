@@ -18,7 +18,8 @@ public sealed class ReviewService(UserDbContext db) : IReviewService
             Id = Guid.NewGuid(),
             UserId = userId,
             AttractionId = attractionId,
-            Content = content
+            Content = content,
+            ModifiedAt = DateTime.UtcNow
         };
         db.Reviews.Add(review);
         await db.SaveChangesAsync();
@@ -26,7 +27,10 @@ public sealed class ReviewService(UserDbContext db) : IReviewService
     }
 
     public async Task<IEnumerable<Review>> GetByAttractionAsync(Guid attractionId) =>
-        await db.Reviews.Where(r => r.AttractionId == attractionId).ToListAsync();
+        await db.Reviews
+            .Include(r => r.User)
+            .Where(r => r.AttractionId == attractionId)
+            .ToListAsync();
 
     public async Task<Review?> EditAsync(Guid reviewId, Guid userId, string content)
     {
@@ -39,6 +43,7 @@ public sealed class ReviewService(UserDbContext db) : IReviewService
         if (review is null) return null;
 
         review.Content = content;
+        review.ModifiedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
         return review;
     }
