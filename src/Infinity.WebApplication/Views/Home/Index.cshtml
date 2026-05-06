@@ -26,6 +26,22 @@
             </section>
 
             <section class="location-panel attraction-panel" id="attraction-panel">
+                <div class="attraction-panel__controls d-flex gap-2 mb-3" id="attraction-controls" hidden>
+                    <input type="search"
+                           class="form-control form-control-sm"
+                           id="attraction-search"
+                           placeholder="Search attractions…"
+                           aria-label="Search attractions" />
+                    <select class="form-select form-select-sm w-auto flex-shrink-0"
+                            id="attraction-sort"
+                            aria-label="Sort attractions">
+                        <option value="default">Default</option>
+                        <option value="name-asc">Name A–Z</option>
+                        <option value="name-desc">Name Z–A</option>
+                        <option value="rating-desc">Highest Rated</option>
+                        <option value="rating-asc">Lowest Rated</option>
+                    </select>
+                </div>
                 <div id="attraction-panel-list" class="d-grid gap-3"></div>
             </section>
         </section>

@@ -27,6 +27,9 @@
 
         const getLocationPanel = () => document.querySelector(".location-panel--parks");
         const getAttractionPanelList = () => document.getElementById("attraction-panel-list");
+        const getAttractionControls = () => document.getElementById("attraction-controls");
+        const getSearchInput = () => document.getElementById("attraction-search");
+        const getSortSelect = () => document.getElementById("attraction-sort");
 
         function initHomepageGlobe() {
             if (!window.mapboxgl) {
@@ -111,6 +114,7 @@
             const parkMarkers = [];
             let attractionMarkers = [];
             let focusedPark = null;
+            let currentAttractions = [];
             const resetZoomThreshold = 0.01;
             const resetCenterThreshold = 0.02;
 
@@ -171,18 +175,45 @@
                 });
             };
 
-            const renderAttractions = (park) => {
+            // STAR-35: Returns attractions sorted by the current sort selection
+            const getSortedAttractions = (attractions) => {
+                const sort = getSortSelect()?.value ?? "default";
+                const list = [...attractions];
+                if (sort === "name-asc") return list.sort((a, b) => a.title.localeCompare(b.title));
+                if (sort === "name-desc") return list.sort((a, b) => b.title.localeCompare(a.title));
+                if (sort === "rating-desc") return list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+                if (sort === "rating-asc") return list.sort((a, b) => (a.rating ?? 0) - (b.rating ?? 0));
+                return list;
+            };
+
+            // STAR-36: Returns attractions filtered by the current search query
+            const getFilteredAttractions = (attractions) => {
+                const query = getSearchInput()?.value.trim().toLowerCase() ?? "";
+                if (!query) return attractions;
+                return attractions.filter(a =>
+                    a.title.toLowerCase().includes(query) ||
+                    a.subtitle.toLowerCase().includes(query)
+                );
+            };
+
+            // Applies current search + sort state and re-renders the list
+            const renderAttractionList = (attractions) => {
                 const attractionPanelList = getAttractionPanelList();
-                if (!attractionPanelList) {
+                if (!attractionPanelList) return;
+
+                const visible = getSortedAttractions(getFilteredAttractions(attractions));
+
+                if (visible.length === 0) {
+                    attractionPanelList.innerHTML = `<p class="text-secondary fst-italic">No attractions match your search.</p>`;
                     return;
                 }
 
-                attractionPanelList.innerHTML = (park.attractions ?? [])
-                    .map((attraction, index) => `
+                attractionPanelList.innerHTML = visible
+                    .map((attraction) => `
                         <article class="attraction-card location-card location-card--clickable card text-bg"
                                  role="button"
                                  tabindex="0"
-                                 data-attraction-index="${index}"
+                                 data-attraction-id="${escapeHtml(attraction.id ?? "")}"
                                  aria-label="View details for ${escapeHtml(attraction.title)}">
                             <h3 class="h5 text-primary mb-1">${escapeHtml(attraction.title)}</h3>
                             <span data-rating-container="${escapeHtml(attraction.id ?? "")}">
@@ -193,7 +224,19 @@
                     `)
                     .join("");
 
-                hydrateAttractionRatings(park.attractions ?? []);
+                hydrateAttractionRatings(visible);
+            };
+
+            const renderAttractions = (park) => {
+                currentAttractions = park.attractions ?? [];
+
+                // Reset controls to default state when switching parks
+                const searchInput = getSearchInput();
+                const sortSelect = getSortSelect();
+                if (searchInput) searchInput.value = "";
+                if (sortSelect) sortSelect.value = "default";
+
+                renderAttractionList(currentAttractions);
             };
 
             const bindAttractionPanelInteractions = () => {
@@ -211,17 +254,14 @@
                         return;
                     }
 
-                    const card = targetElement.closest("[data-attraction-index]");
+                    // Use data-attraction-id so filtering/sorting doesn't break lookups
+                    const card = targetElement.closest("[data-attraction-id]");
                     if (!card || !focusedPark) {
                         return;
                     }
 
-                    const index = Number(card.getAttribute("data-attraction-index"));
-                    if (!Number.isInteger(index)) {
-                        return;
-                    }
-
-                    const attraction = focusedPark.attractions?.[index];
+                    const attractionId = card.getAttribute("data-attraction-id");
+                    const attraction = focusedPark.attractions?.find((a) => a.id === attractionId);
                     if (!attraction) {
                         return;
                     }
@@ -254,11 +294,22 @@
                     event.preventDefault();
                     activateAttractionFromEvent(target);
                 });
+
+                // STAR-36: re-render on search input
+                getSearchInput()?.addEventListener("input", () => {
+                    renderAttractionList(currentAttractions);
+                });
+
+                // STAR-35: re-render on sort change
+                getSortSelect()?.addEventListener("change", () => {
+                    renderAttractionList(currentAttractions);
+                });
             };
 
             const setFocusedState = (focused, park) => {
                 const locationPanel = getLocationPanel();
                 const attractionPanelList = getAttractionPanelList();
+                const attractionControls = getAttractionControls();
                 homePage?.classList.toggle("is-park-focused", focused);
                 focusedPark = focused ? park : null;
 
@@ -267,6 +318,11 @@
                         locationPanel.scrollTop = 0;
                     }
                     locationPanel.style.overflowY = focused ? "hidden" : "scroll";
+                }
+
+                // Show/hide search and sort controls alongside the attractions list
+                if (attractionControls) {
+                    attractionControls.hidden = !focused;
                 }
 
                 if (focused) {
@@ -287,6 +343,7 @@
                 } else {
                     clearAttractionMarkers();
                     window.closeHomepageAttractionWidget?.();
+                    currentAttractions = [];
                     if (attractionPanelList) {
                         attractionPanelList.innerHTML = "";
                     }
