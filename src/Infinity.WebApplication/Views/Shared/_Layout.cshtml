@@ -179,8 +179,11 @@
             position: absolute;
             inset: 0;
             z-index: 5;
-            display: grid;
-            place-items: center;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            overflow-y: auto;
+            padding: 40px 24px;
             background: rgba(5, 7, 13, 0.45);
             pointer-events: auto;
         }
@@ -193,6 +196,8 @@
             width: min(560px, calc(100vw - 48px));
             padding: 30px 28px;
             position: relative;
+            flex-shrink: 0;
+            margin: auto;
             box-shadow:
                 0 16px 44px rgba(0, 0, 0, 0.45),
                 0 0 0 1px rgba(255, 204, 0, 0.16);
@@ -207,6 +212,20 @@
         .attraction-widget__rating {
             margin-top: 4px;
             margin-bottom: 2px;
+        }
+
+        .review-textarea {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #f0f4ff;
+            border-color: rgba(255, 255, 255, 0.18);
+            resize: none;
+        }
+
+        .review-textarea:focus {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: #f0f4ff;
+            border-color: rgba(255, 204, 0, 0.45);
+            box-shadow: 0 0 0 0.2rem rgba(255, 204, 0, 0.12);
         }
 
         .home-page__content {
