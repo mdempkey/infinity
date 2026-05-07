@@ -38,12 +38,44 @@
             }
         };
 
+        const MAX_REVIEW_LENGTH = 2000;
+
+        const showReviewError = (message) => {
+            const errorEl = document.getElementById("reviewError");
+            const textarea = document.getElementById("attraction-widget-review-input");
+            if (errorEl) {
+                errorEl.textContent = message;
+                errorEl.hidden = false;
+            }
+            if (textarea) textarea.classList.add("is-invalid");
+        };
+
+        const clearReviewError = () => {
+            const errorEl = document.getElementById("reviewError");
+            const textarea = document.getElementById("attraction-widget-review-input");
+            if (errorEl) {
+                errorEl.textContent = "";
+                errorEl.hidden = true;
+            }
+            if (textarea) textarea.classList.remove("is-invalid");
+        };
+
         const handleSubmitReview = async () => {
             const textarea = document.getElementById("attraction-widget-review-input");
             const counter = document.getElementById("reviewCharacterCount");
             if (!textarea || !currentAttractionId) return;
             const content = textarea.value.trim();
-            if (!content) return;
+
+            clearReviewError();
+
+            if (!content) {
+                showReviewError("Review cannot be empty.");
+                return;
+            }
+            if (content.length > MAX_REVIEW_LENGTH) {
+                showReviewError(`Review must be ${MAX_REVIEW_LENGTH} characters or fewer.`);
+                return;
+            }
 
             const token = window.getToken?.();
             if (!token) return;
@@ -57,12 +89,16 @@
                     },
                     body: JSON.stringify({ attractionId: currentAttractionId, content })
                 });
-                if (!res.ok) return;
+                if (!res.ok) {
+                    showReviewError("Failed to submit review. Please try again.");
+                    return;
+                }
                 textarea.value = "";
                 if (counter) counter.textContent = "0/2000";
+                clearReviewError();
                 await fetchAndRenderReviews(currentAttractionId);
             } catch {
-                // silently fail
+                showReviewError("An unexpected error occurred. Please try again.");
             }
         };
 
@@ -78,8 +114,8 @@
             const editContainer = document.createElement("div");
             editContainer.setAttribute("data-edit-container", "");
             editContainer.innerHTML = `
-                <textarea class="form-control form-control-sm bg-dark-subtle text-light border-secondary mt-1"
-                          rows="3" maxlength="2000" style="resize: none;" data-edit-textarea></textarea>
+                <textarea class="form-control review-textarea mt-1"
+                          rows="3" maxlength="2000" data-edit-textarea></textarea>
                 <div class="d-flex justify-content-between align-items-center mt-1">
                     <div class="d-flex gap-2">
                         <button type="button"
@@ -283,6 +319,7 @@
             if (draftTextarea && draftCounter) {
                 draftTextarea.addEventListener("input", () => {
                     draftCounter.textContent = `${draftTextarea.value.length}/2000`;
+                    clearReviewError();
                 });
             }
 
