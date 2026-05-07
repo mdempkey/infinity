@@ -291,6 +291,10 @@
                         return;
                     }
 
+                    if (!target.closest("[data-attraction-id]")) {
+                        return;
+                    }
+
                     event.preventDefault();
                     activateAttractionFromEvent(target);
                 });
@@ -421,7 +425,11 @@
         }
 
         if (window.mapboxgl) {
-            initHomepageGlobe();
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", initHomepageGlobe, { once: true });
+            } else {
+                initHomepageGlobe();
+            }
             return;
         }
 
