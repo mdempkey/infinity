@@ -165,6 +165,7 @@
                         if (!res.ok) return;
                         const data = await res.json();
                         if (data.average == null) return;
+                        attraction.rating = data.average;
                         const container = document.querySelector(`[data-rating-container="${attraction.id}"]`);
                         if (!container) return;
                         container.innerHTML = window.renderHomepageStarRating?.(data.average) ?? "";
@@ -173,19 +174,17 @@
                     }
                 });
             };
-
-            // STAR-35: Returns attractions sorted by the current sort selection
+            
             const getSortedAttractions = (attractions) => {
                 const sort = getSortSelect()?.value ?? "default";
                 const list = [...attractions];
                 if (sort === "name-asc") return list.sort((a, b) => a.title.localeCompare(b.title));
                 if (sort === "name-desc") return list.sort((a, b) => b.title.localeCompare(a.title));
-                if (sort === "rating-desc") return list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
-                if (sort === "rating-asc") return list.sort((a, b) => (a.rating ?? 0) - (b.rating ?? 0));
+                if (sort === "rating-desc") return list.sort((a, b) => (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0));
+                if (sort === "rating-asc") return list.sort((a, b) => (parseFloat(a.rating) || 0) - (parseFloat(b.rating) || 0));
                 return list;
             };
-
-            // STAR-36: Returns attractions filtered by the current search query
+            
             const getFilteredAttractions = (attractions) => {
                 const query = getSearchInput()?.value.trim().toLowerCase() ?? "";
                 if (!query) return attractions;
@@ -296,13 +295,11 @@
                     event.preventDefault();
                     activateAttractionFromEvent(target);
                 });
-
-                // STAR-36: re-render on search input
+                
                 getSearchInput()?.addEventListener("input", () => {
                     renderAttractionList(currentAttractions);
                 });
-
-                // STAR-35: re-render on sort change
+                
                 getSortSelect()?.addEventListener("change", () => {
                     renderAttractionList(currentAttractions);
                 });
