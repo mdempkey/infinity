@@ -8,6 +8,14 @@ public static class LocationsDbSeeder
 {
     private static string Imgs(params string[] filePaths) =>
         JsonSerializer.Serialize(filePaths.Select(f => $"/api/attractions/image/{f}"));
+    
+    private static readonly string StarToursImgs = Imgs(
+        "02_rides/star_tours/tour1.jpg",
+        "02_rides/star_tours/tour2.avif",
+        "02_rides/star_tours/tour3.webp",
+        "02_rides/star_tours/tour4.jpeg",
+        "02_rides/star_tours/tour5.jpg"
+    );
 
     private static readonly string SmugglersRunImgs = Imgs(
         "02_rides/millennium_falcon_smugglers_run/smug1.webp",
@@ -188,6 +196,25 @@ public static class LocationsDbSeeder
                 Tags = JsonSerializer.Serialize(new[] { "merchandise", "collectibles", "legacy-sabers" }),
                 ImageUrls = DokOndarsImgs
             },
+            
+            new() {
+                Id = Guid.NewGuid().ToString(),
+                ParkId = "park_dle_gge",
+                Name = "Star Tours – The Adventures Continue",
+                Description = "Make the jump to hyperspace on a thrilling 3D space flight to destinations from the Star Wars saga.",
+                Lat = 33.8124m, Lng = -117.9180m,
+                Tags = JsonSerializer.Serialize(new[] { "simulator", "3d", "classic" }),
+                ImageUrls = StarToursImgs
+            },
+            new() {
+                Id = Guid.NewGuid().ToString(),
+                ParkId = "park_dle_gge",
+                Name = "Space Mountain",
+                Description = "Race through the cosmos in the dark to a thrilling musical score.",
+                Lat = 33.8126m, Lng = -117.9174m,
+                Tags = JsonSerializer.Serialize(new[] { "coaster", "indoor", "dark-ride" }),
+                ImageUrls = HyperspaceMtnImgs // Reusing the Hyperspace Mountain images for CA
+            },
 
             // ── Walt Disney World GGE ────────────────────────────────────────
             new() {
@@ -276,6 +303,8 @@ public static class LocationsDbSeeder
 
         var links = new List<AttractionCategory>
         {
+            new() { AttractionId = attractionsByKey[("park_dle_gge", "Star Tours – The Adventures Continue")].Id, CategoryId = catByName["Ride"].Id },
+            new() { AttractionId = attractionsByKey[("park_dle_gge", "Space Mountain")].Id, CategoryId = catByName["Ride"].Id },
             new() { AttractionId = attractionsByKey[("park_dle_gge", "Millennium Falcon: Smugglers Run")].Id,  CategoryId = catByName["Ride"].Id },
             new() { AttractionId = attractionsByKey[("park_dle_gge", "Star Wars: Rise of the Resistance")].Id, CategoryId = catByName["Ride"].Id },
             new() { AttractionId = attractionsByKey[("park_dle_gge", "Docking Bay 7 Food and Cargo")].Id,      CategoryId = catByName["Restaurant"].Id },

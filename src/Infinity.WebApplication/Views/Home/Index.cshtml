@@ -7,7 +7,8 @@
     <partial name="_Globe" />
     <div class="home-page__scrim"></div>
     <button type="button" class="home-page__reset btn btn-outline-primary btn-sm px-3 py-2" onclick="resetHomepageGlobe()">Back to Globe</button>
-
+    
+    
     <div class="home-page__content">
         <section class="home-hero">
             <section class="location-panel location-panel--parks">
@@ -49,3 +50,39 @@
 
     <partial name="_AttractionWidget" />
 </section>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const playBtn = document.getElementById('playSongBtn');
+            const selector = document.getElementById('pokemonSelector');
+            const audioPlayer = document.getElementById('starWarsAudio');
+
+            playBtn.addEventListener('click', function() {
+                const selectedOption = selector.options[selector.selectedIndex];
+
+                if (!selectedOption.value) {
+                    alert("Please select a Pokémon first!");
+                    return;
+                }
+
+                const songType = selectedOption.getAttribute('data-song');
+
+                const songDirectory = {
+                    'cantina': '/audio/cantina-band.mp3',
+                    'imperial': '/audio/imperial-march.mp3',
+                    'main_theme': '/audio/star-wars-theme.mp3'
+                };
+
+                if (songDirectory[songType]) {
+                    audioPlayer.src = songDirectory[songType];
+                    
+                    audioPlayer.currentTime = 0; 
+                    audioPlayer.play()
+                        .then(() => console.log("Now playing Star Wars audio for: " + selectedOption.value))
+                        .catch(error => console.error("Error playing audio. Make sure the audio files exist in wwwroot/audio:", error));
+                }
+            });
+        });
+    </script>
+}

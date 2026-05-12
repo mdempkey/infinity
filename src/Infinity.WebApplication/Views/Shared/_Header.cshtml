@@ -1,8 +1,29 @@
 <header class="site-navbar navbar navbar-expand sticky-top px-4 px-md-5 py-3 border-bottom border-secondary-subtle">
-    <a class="site-title navbar-brand p-0 m-0" asp-controller="Home" asp-action="Index" aria-label="Infinity Site home">
-        <span class="site-title__name">STAR WARS</span>
-        <span class="site-title__tag">Themed Attractions</span>
+
+    <a class="site-title navbar-brand p-0 m-0 d-flex align-items-center" style="gap: 12px;" asp-controller="Home" asp-action="Index" aria-label="Infinity Site home">
+        <div class="d-flex flex-column" style="gap: 2px;">
+            <img src="~/websitelogo2.png" alt="Star Wars Logo" style="height: 70px; width: auto;" />
+
+        </div>
     </a>
+    
+    <div class="container mt-0 p-0 rounded text-white" style="background-color: #0b0f19; border: 2px solid #1a5276; max-width: 600px; box-shadow: 0 0 15px rgba(26, 82, 118, 0.6);">
+        <img src="~/picdarth.png" alt="Pokemon Logo" style="height: 40px; width: auto;" />
+        <p style="color: #b3d9ff; font-size: 0.95rem;"> ♩ ♪ ♫ ♬ Pokémon ♩ ♪ ♫ ♬</p>
+
+        <div class="mb-2">
+            <select id="pokemonSelector" class="form-select text-white" style="background-color: #16213e; border-color: #1a5276;">
+                <option value="" selected disabled>Choose your Pokémon...</option>
+                <option value="pikachu" data-song="cantina">Pikachu</option>
+                <option value="charizard" data-song="imperial">Charizard</option>
+                <option value="bulbasaur" data-song="main_theme">Bulbasaur</option>
+            </select>
+        </div>
+
+
+        <audio id="starWarsAudio" style="display:none;"></audio>
+    </div>
+    
     <nav class="ms-auto d-flex gap-3 align-items-center justify-content-end">
         <div id="nav-logged-out" class="d-flex gap-3 align-items-center">
             <button type="button" class="btn btn-link btn-sm p-0" onclick="showLoginModal()">Log In</button>
@@ -13,7 +34,9 @@
             <button type="button" class="btn btn-link btn-sm p-0" onclick="logout()">Log Out</button>
         </div>
     </nav>
+
 </header>
 
 <partial name="_LoginModal" />
 <partial name="_SignUpModal" />
+
