@@ -24,6 +24,13 @@ builder.Services.AddHttpClient<IIndexContentService, IndexContentService>(client
 })
 .AddHttpMessageHandler<ServiceTokenHandler>();
 
+builder.Services.AddHttpClient("InfinityApi", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["InfinityApi:BaseUrl"]
+        ?? throw new InvalidOperationException("InfinityApi:BaseUrl is not configured."));
+})
+.AddHttpMessageHandler<ServiceTokenHandler>();
+
 builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("UserConnection")
         ?? throw new InvalidOperationException("UserConnection is not configured.")));

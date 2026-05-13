@@ -1,29 +1,163 @@
 <header class="site-navbar navbar navbar-expand sticky-top px-4 px-md-5 py-3 border-bottom border-secondary-subtle">
 
-    <a class="site-title navbar-brand p-0 m-0 d-flex align-items-center" style="gap: 12px;" asp-controller="Home" asp-action="Index" aria-label="Infinity Site home">
+    <style>
+        .pokemon-sound-widget {
+            background:
+                radial-gradient(circle at top left, rgba(255, 204, 0, 0.12), transparent 35%),
+                linear-gradient(135deg, #0b0f19, #111a2f);
+            border: 2px solid #1a5276;
+            max-width: 600px;
+            box-shadow:
+                0 0 15px rgba(26, 82, 118, 0.6),
+                0 0 24px rgba(255, 204, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pokemon-sound-widget::before,
+        .pokemon-sound-widget::after {
+            position: absolute;
+            pointer-events: none;
+            color: #ffcc00;
+            font-size: 1rem;
+            text-shadow: 0 0 12px rgba(255, 204, 0, 0.8);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .pokemon-sound-widget::before {
+            content: "♪ ♫";
+            left: 18%;
+            top: 0.25rem;
+            animation: pokemonNotesLeft 2.2s ease-in-out infinite;
+        }
+
+        .pokemon-sound-widget::after {
+            content: "♫ ♪";
+            right: 18%;
+            top: 0.25rem;
+            animation: pokemonNotesRight 2.6s ease-in-out infinite;
+        }
+
+        .pokemon-sound-title {
+            color: #b3d9ff;
+            font-size: 0.95rem;
+            animation: pokemonTextDance 1.6s ease-in-out infinite;
+            text-shadow:
+                0 0 8px rgba(25, 183, 255, 0.75),
+                0 0 16px rgba(255, 204, 0, 0.45);
+        }
+
+        #pokemonSelector {
+            background-color: #16213e;
+            border-color: #1a5276;
+            color: white;
+            transition:
+                transform 0.18s ease,
+                border-color 0.18s ease,
+                box-shadow 0.18s ease;
+        }
+
+        #pokemonSelector:hover,
+        #pokemonSelector:focus {
+            transform: translateY(-1px);
+            border-color: rgba(255, 204, 0, 0.75);
+            box-shadow:
+                0 0 0 0.2rem rgba(255, 204, 0, 0.14),
+                0 0 22px rgba(25, 183, 255, 0.28);
+        }
+
+        #pokemonSelector option {
+            background-color: #16213e;
+            color: white;
+        }
+
+        .pokemon-status {
+            min-height: 1rem;
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 0.78rem;
+        }
+
+        @@keyframes pokemonTextDance {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            25% {
+                transform: translateY(-2px) rotate(-1deg);
+            }
+
+            50% {
+                transform: translateY(1px) rotate(1deg);
+            }
+
+            75% {
+                transform: translateY(-1px) rotate(-0.5deg);
+            }
+        }
+
+        @@keyframes pokemonNotesLeft {
+            0% {
+                opacity: 0;
+                transform: translateY(8px) rotate(-8deg) scale(0.85);
+            }
+
+            35% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-16px) rotate(8deg) scale(1.08);
+            }
+        }
+
+        @@keyframes pokemonNotesRight {
+            0% {
+                opacity: 0;
+                transform: translateY(8px) rotate(8deg) scale(0.85);
+            }
+
+            35% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-16px) rotate(-8deg) scale(1.08);
+            }
+        }
+    </style>
+
+    <a class="site-title navbar-brand p-0 m-0 d-flex align-items-center"
+       style="gap: 12px;"
+       asp-controller="Home"
+       asp-action="Index"
+       aria-label="Infinity Site home">
         <div class="d-flex flex-column" style="gap: 2px;">
             <img src="~/websitelogo2.png" alt="Star Wars Logo" style="height: 70px; width: auto;" />
-
         </div>
     </a>
-    
-    <div class="container mt-0 p-0 rounded text-white" style="background-color: #0b0f19; border: 2px solid #1a5276; max-width: 600px; box-shadow: 0 0 15px rgba(26, 82, 118, 0.6);">
-        <img src="~/picdarth.png" alt="Pokemon Logo" style="height: 40px; width: auto;" />
-        <p style="color: #b3d9ff; font-size: 0.95rem;"> ♩ ♪ ♫ ♬ Pokémon ♩ ♪ ♫ ♬</p>
 
-        <div class="mb-2">
-            <select id="pokemonSelector" class="form-select text-white" style="background-color: #16213e; border-color: #1a5276;">
-                <option value="" selected disabled>Choose your Pokémon...</option>
-                <option value="pikachu" data-song="cantina">Pikachu</option>
-                <option value="charizard" data-song="imperial">Charizard</option>
-                <option value="bulbasaur" data-song="main_theme">Bulbasaur</option>
+    <div class="pokemon-sound-widget container mt-0 p-2 rounded text-white">
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <img src="~/picdarth.png" alt="Pokemon Logo" style="height: 40px; width: auto;" />
+            <p class="pokemon-sound-title mb-0">♩ ♪ ♫ ♬ Pokémon ♩ ♪ ♫ ♬</p>
+        </div>
+
+        <div class="mb-1">
+            <select id="pokemonSelector"
+                    class="form-select form-select-sm text-white"
+                    aria-label="Choose Pokémon sound">
+                <option value="" selected disabled>Loading Pokémon...</option>
             </select>
         </div>
 
-
-        <audio id="starWarsAudio" style="display:none;"></audio>
+        <div id="pokemonSoundStatus" class="pokemon-status">
+            Loading Pokémon sounds...
+        </div>
     </div>
-    
+
     <nav class="ms-auto d-flex gap-3 align-items-center justify-content-end">
         <div id="nav-logged-out" class="d-flex gap-3 align-items-center">
             <button type="button" class="btn btn-link btn-sm p-0" onclick="showLoginModal()">Log In</button>
@@ -35,8 +169,95 @@
         </div>
     </nav>
 
+    <script>
+        (() => {
+            document.addEventListener("DOMContentLoaded", async () => {
+                const selector = document.getElementById("pokemonSelector");
+                const status = document.getElementById("pokemonSoundStatus");
+
+                if (!selector) {
+                    return;
+                }
+
+                const setStatus = (message) => {
+                    if (status) {
+                        status.textContent = message ?? "";
+                    }
+                };
+
+                try {
+                    const response = await fetch("/api/pokemon", {
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Failed to load Pokémon: ${response.status}`);
+                    }
+
+                    const pokemon = await response.json();
+
+                    selector.innerHTML = "";
+
+                    const placeholder = document.createElement("option");
+                    placeholder.value = "";
+                    placeholder.disabled = true;
+                    placeholder.selected = true;
+                    placeholder.textContent = "Choose your Pokémon...";
+                    selector.appendChild(placeholder);
+
+                    pokemon
+                        .sort((a, b) => Number(a.id ?? 0) - Number(b.id ?? 0))
+                        .forEach((entry) => {
+                            const option = document.createElement("option");
+
+                            option.value = entry.name;
+                            option.dataset.id = entry.id;
+                            option.dataset.cry = entry.cry;
+                            option.textContent = `#${String(entry.id).padStart(3, "0")} ${entry.name}`;
+
+                            selector.appendChild(option);
+                        });
+
+                    setStatus(`Loaded ${pokemon.length} Pokémon sounds.`);
+                } catch (error) {
+                    selector.innerHTML = "";
+
+                    const errorOption = document.createElement("option");
+                    errorOption.value = "";
+                    errorOption.selected = true;
+                    errorOption.disabled = true;
+                    errorOption.textContent = "Unable to load Pokémon";
+
+                    selector.appendChild(errorOption);
+                    setStatus(error.message || "Unable to load Pokémon sounds.");
+                }
+
+                selector.addEventListener("change", () => {
+                    const selectedOption = selector.options[selector.selectedIndex];
+
+                    if (!selectedOption || !selectedOption.value) {
+                        return;
+                    }
+
+                    const selectedPokemon = {
+                        id: Number(selectedOption.dataset.id),
+                        name: selectedOption.value,
+                        cry: selectedOption.dataset.cry
+                    };
+
+                    setStatus(`Selected ${selectedOption.textContent}`);
+
+                    window.dispatchEvent(new CustomEvent("pokemon:selected", {
+                        detail: selectedPokemon
+                    }));
+                });
+            });
+        })();
+    </script>
+
 </header>
 
 <partial name="_LoginModal" />
 <partial name="_SignUpModal" />
-
