@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using Infinity.WebApplication.ViewModels.Home;
 
 namespace Infinity.WebApplication.Services.Home;
@@ -35,18 +36,57 @@ public sealed class IndexContentService(IConfiguration configuration, HttpClient
                     Lat = (double)(p.Lat ?? 0)
                 },
                 Attractions = attractionsByPark.TryGetValue(p.Id, out var parkAttractions)
-                    ? parkAttractions.Select(a => new AttractionViewModel
+                    ? parkAttractions.Select(a =>
                     {
-                        Id = a.Id,
-                        Title = a.Name,
-                        Subtitle = a.Description ?? string.Empty,
-                        Rating = (double)a.AvgRating,
-                        Coordinates = new CoordinateViewModel
+                        var galleryUrls = new List<string>();
+
+                        if (!string.IsNullOrWhiteSpace(a.ImageUrls))
                         {
-                            Lng = (double)(a.Lng ?? 0),
-                            Lat = (double)(a.Lat ?? 0)
-                        },
-                        Reviews = []
+                            try
+                            {
+                                var imagePaths = JsonSerializer.Deserialize<List<string>>(a.ImageUrls) ?? [];
+
+                                foreach (var rawPath in imagePaths)
+                                {
+                                    if (string.IsNullOrWhiteSpace(rawPath))
+                                    {
+                                        continue;
+                                    }
+
+                                    var normalizedPath = rawPath.Trim();
+
+                                    const string apiPrefix = "/api/attractions/image/";
+                                    if (normalizedPath.StartsWith(apiPrefix, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        normalizedPath = normalizedPath.Substring(apiPrefix.Length);
+                                    }
+
+                                    normalizedPath = normalizedPath.TrimStart('/');
+
+                                    galleryUrls.Add($"/Images/{normalizedPath}");
+                                }
+                            }
+                            catch
+                            {
+                                galleryUrls = [];
+                            }
+                        }
+
+                        return new AttractionViewModel
+                        {
+                            Id = a.Id,
+                            Title = a.Name,
+                            Subtitle = a.Description ?? string.Empty,
+                            Rating = (double)a.AvgRating,
+                            ImageUrl = galleryUrls.FirstOrDefault(),
+                            ImageUrls = galleryUrls,
+                            Coordinates = new CoordinateViewModel
+                            {
+                                Lng = (double)(a.Lng ?? 0),
+                                Lat = (double)(a.Lat ?? 0)
+                            },
+                            Reviews = []
+                        };
                     }).ToList()
                     : []
             }).ToList()
@@ -69,6 +109,7 @@ public sealed class IndexContentService(IConfiguration configuration, HttpClient
         string? Description,
         decimal? Lat,
         decimal? Lng,
+        string? ImageUrls,
         decimal AvgRating,
         int ReviewCount);
 }
