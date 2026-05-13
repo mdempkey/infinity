@@ -1,4 +1,5 @@
 using Infinity.WebApplication.Data;
+using Infinity.WebApplication.Services.AudioService;
 using Infinity.WebApplication.Services.Auth;
 using Infinity.WebApplication.Services.Home;
 using Infinity.WebApplication.Services.RatingService;
@@ -30,6 +31,7 @@ builder.Services.AddDbContext<UserDbContext>(options =>
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddSingleton<IAudioService, AudioService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
