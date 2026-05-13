@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using Microsoft.EntityFrameworkCore;
 using Infinity.WebApi.Data;
 using Infinity.WebApi.Services;
@@ -37,6 +38,21 @@ builder.Services.AddScoped<IStringService, StringService>();
 builder.Services.Configure<ImageOptions>(
     builder.Configuration.GetSection(ImageOptions.SectionName));
 builder.Services.AddSingleton<IImageService, ImageService>();
+
+builder.Services.AddHttpClient<IPokemonService, PokemonService>((sp, client) =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var baseUrl = config["PokemonApi:BaseUrl"]
+                  ?? throw new InvalidOperationException("PokemonApi:BaseUrl is not configured.");
+    var token = config["PokemonApi:BearerToken"]
+                ?? throw new InvalidOperationException("PokemonApi:BearerToken is not configured.");
+
+    client.BaseAddress = new Uri(baseUrl);
+    client.DefaultRequestHeaders.Authorization =
+        new AuthenticationHeaderValue("Bearer", token);
+    client.DefaultRequestHeaders.Accept.Add(
+        new MediaTypeWithQualityHeaderValue("application/json"));
+});
 
 builder.Services.AddDbContext<LocationsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("LocationsConnection")));
