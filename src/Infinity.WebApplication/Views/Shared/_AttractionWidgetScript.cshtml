@@ -1,216 +1,247 @@
 <script>
     (() => {
-        const overlay = document.getElementById("attraction-widget-overlay");
-        const dialog = document.getElementById("attraction-widget");
-        const closeButton = document.getElementById("attraction-widget-close");
-
-        const getTitleNode = () => document.getElementById("attraction-widget-title");
+        const getOverlay = () => document.getElementById("attraction-widget-overlay");
+        const getDialog = () => document.getElementById("attraction-widget");
         const getParkNode = () => document.getElementById("attraction-widget-park");
+        const getTitleNode = () => document.getElementById("attraction-widget-title");
         const getRatingNode = () => document.getElementById("attraction-widget-rating");
         const getSubtitleNode = () => document.getElementById("attraction-widget-subtitle");
         const getImageNode = () => document.getElementById("attraction-widget-image");
-        const getReviewListNode = () => document.getElementById("attraction-review-list");
-        const getReviewCountNode = () => document.getElementById("attraction-review-count");
-        const getReviewDescriptionNode = () => document.getElementById("attraction-review-description");
-        const getReviewStatusNode = () => document.getElementById("attraction-review-status");
-        const getReviewForm = () => document.getElementById("attraction-review-form");
-        const getReviewAttractionIdInput = () => document.getElementById("attraction-review-attraction-id");
-        const getReviewTextInput = () => document.getElementById("attraction-review-text");
-        const getReviewRatingInput = () => document.getElementById("attraction-review-rating");
-        const getReviewSubmitButton = () => document.getElementById("attraction-review-submit");
-        const getReviewAuthMessage = () => document.getElementById("attraction-review-auth-message");
+        const getCloseButton = () => document.getElementById("attraction-widget-close");
+        const getHomePage = () => document.querySelector(".home-page");
 
-        const buildStarRating = (rating) => {
-            const roundedRating = Math.round(Number(rating) || 0);
-            return `${"★".repeat(roundedRating)}${"☆".repeat(Math.max(0, 5 - roundedRating))}`;
-        };
+        const getReviewListNode = () => document.getElementById("attraction-widget-reviews-list");
+        const getReviewStatusNode = () => document.getElementById("reviewError");
+        const getReviewForm = () => document.getElementById("attraction-widget-review-form");
+        const getReviewTextInput = () => document.getElementById("attraction-widget-review-input");
+        const getReviewSubmitButton = () => document.getElementById("attraction-widget-review-submit");
+        const getReviewAuthMessage = () => document.getElementById("attraction-widget-review-signin");
+        const getReviewCharacterCount = () => document.getElementById("reviewCharacterCount");
+
+        const MAX_REVIEW_LENGTH = 2000;
+        let currentAttractionId = null;
 
         const setReviewStatus = (message, isError = false) => {
             const statusNode = getReviewStatusNode();
-
             if (!statusNode) {
                 return;
             }
 
             statusNode.textContent = message ?? "";
+            statusNode.hidden = !message;
             statusNode.classList.toggle("text-danger", isError);
             statusNode.classList.toggle("text-success", !isError && !!message);
         };
 
-        const renderReviews = (reviews) => {
-            const reviewListNode = getReviewListNode();
-            const reviewCountNode = getReviewCountNode();
-            const reviewDescriptionNode = getReviewDescriptionNode();
+        const updateCharacterCount = () => {
+            const input = getReviewTextInput();
+            const counter = getReviewCharacterCount();
+            if (!input || !counter) {
+                return;
+            }
 
-            if (!reviewListNode || !reviewCountNode || !reviewDescriptionNode) {
+            counter.textContent = `${input.value.length}/${MAX_REVIEW_LENGTH}`;
+        };
+
+        const setReviewMeta = (reviews) => {
+        };
+
+        const renderReviewFallback = (reviews) => {
+            const reviewListNode = getReviewListNode();
+            if (!reviewListNode) {
                 return;
             }
 
             reviewListNode.innerHTML = "";
 
-            if (!reviews || reviews.length === 0) {
-                reviewCountNode.textContent = "0 reviews";
-                reviewDescriptionNode.textContent = "Be the first to share your thoughts.";
+            if (!Array.isArray(reviews) || reviews.length === 0) {
+                const empty = document.createElement("p");
+                empty.className = "small text-secondary mb-0";
+                empty.textContent = "No reviews yet. Be the first to leave a review.";
+                reviewListNode.appendChild(empty);
                 return;
             }
 
-            reviewCountNode.textContent = `${reviews.length} review${reviews.length === 1 ? "" : "s"}`;
-            reviewDescriptionNode.textContent = "See what other guests are saying.";
-
-            reviews.forEach(review => {
+            reviews.forEach((review) => {
                 const article = document.createElement("article");
-                article.className = "border rounded-3 p-3 bg-light";
+                article.className = "border rounded-3 p-3 bg-light mb-2";
+                article.dataset.reviewId = String(review.id ?? "");
 
-                const header = document.createElement("div");
-                header.className = "d-flex justify-content-between align-items-center gap-3 mb-2";
+                const meta = document.createElement("div");
+                meta.className = "d-flex justify-content-between gap-2 small text-secondary mb-2";
 
-                const author = document.createElement("p");
-                author.className = "fw-semibold mb-0";
-                author.textContent = review.authorName ?? "Guest";
+                const author = document.createElement("strong");
+                author.className = "text-dark";
+                author.textContent = review.author ?? review.authorName ?? "Guest";
 
-                const rating = document.createElement("p");
-                rating.className = "star-rating mb-0";
-                rating.textContent = buildStarRating(review.rating);
+                const date = document.createElement("span");
+                date.textContent = review.date ?? review.createdAtDisplay ?? "";
 
-                header.append(author, rating);
+                meta.append(author, date);
+
+                const rating = document.createElement("div");
+                rating.className = "star-rating mb-2";
+                const value = Number(review.rating ?? 0);
+                rating.textContent = `${"★".repeat(Math.round(value))}${"☆".repeat(Math.max(0, 5 - Math.round(value)))}`;
 
                 const body = document.createElement("p");
-                body.className = "mb-2 text-secondary";
-                body.textContent = review.reviewText ?? "";
+                body.className = "mb-1 text-secondary";
+                body.dataset.reviewContent = "";
+                body.textContent = review.comment ?? review.reviewText ?? review.content ?? "";
 
-                const footer = document.createElement("p");
-                footer.className = "mb-0 small text-secondary";
-                footer.textContent = review.createdAtDisplay ?? "";
+                article.append(meta, rating, body);
 
-                article.append(header, body, footer);
-                reviewListNode.append(article);
+                if (review.isOwner) {
+                    const actions = document.createElement("div");
+                    actions.className = "d-flex gap-2 mt-1";
+                    actions.dataset.reviewActions = "";
+
+                    const editBtn = document.createElement("button");
+                    editBtn.type = "button";
+                    editBtn.className = "btn btn-link btn-sm p-0";
+                    editBtn.dataset.reviewAction = "edit";
+                    editBtn.textContent = "Edit";
+
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.type = "button";
+                    deleteBtn.className = "btn btn-link btn-sm p-0";
+                    deleteBtn.dataset.reviewAction = "delete";
+                    deleteBtn.textContent = "Delete";
+
+                    actions.append(editBtn, deleteBtn);
+                    article.appendChild(actions);
+                }
+
+                reviewListNode.appendChild(article);
             });
         };
 
-        const loadReviews = async (attractionId) => {
-            try {
-                const response = await fetch(`/api/attractions/${attractionId}/reviews`, {
-                    headers: {
-                        "Accept": "application/json"
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error("Unable to load reviews right now.");
-                }
-
-                const payload = await response.json();
-                renderReviews(payload.reviews ?? []);
-            } catch (error) {
-                renderReviews([]);
-                setReviewStatus(error.message || "Unable to load reviews right now.", true);
-            }
-        };
-
-        const resetReviewForm = (attractionId) => {
-            const form = getReviewForm();
-            const attractionIdInput = getReviewAttractionIdInput();
-            const textInput = getReviewTextInput();
-            const ratingInput = getReviewRatingInput();
-            const authMessage = getReviewAuthMessage();
-
-            if (form) {
-                form.reset();
-            }
-
-            if (attractionIdInput) {
-                attractionIdInput.value = attractionId ?? "";
-            }
-
-            if (textInput) {
-                textInput.value = "";
-            }
-
-            if (ratingInput) {
-                ratingInput.value = "5";
-            }
-
-            if (authMessage) {
-                authMessage.hidden = !authMessage.dataset.requiresAuth;
-            }
-
-            setReviewStatus("");
-        };
-
-        const openWidget = ({ parkTitle, parkLocation, attractionTitle, attractionSubtitle, attractionRating, attractionId, attractionImageUrl }) => {
-            const titleNode = getTitleNode();
-            const parkNode = getParkNode();
-            const ratingNode = getRatingNode();
-            const subtitleNode = getSubtitleNode();
-            const imageNode = getImageNode();
-
-            if (!overlay || !dialog || !titleNode || !parkNode || !ratingNode || !subtitleNode) {
+        const renderReviews = (reviews) => {
+            const reviewListNode = getReviewListNode();
+            if (!reviewListNode) {
                 return;
             }
 
-            parkNode.textContent = `${parkTitle} • ${parkLocation}`;
-            titleNode.textContent = attractionTitle;
-            ratingNode.textContent = buildStarRating(attractionRating);
-            subtitleNode.textContent = attractionSubtitle ?? "";
+            setReviewMeta(reviews);
 
-            if (imageNode) {
-                if (attractionImageUrl) {
-                    imageNode.src = attractionImageUrl;
-                    imageNode.alt = attractionTitle;
-                    imageNode.hidden = false;
-                } else {
-                    imageNode.src = "";
-                    imageNode.alt = "";
-                    imageNode.hidden = true;
-                }
+            if (typeof window.renderHomepageAttractionReviews === "function") {
+                const fragment = window.renderHomepageAttractionReviews(reviews);
+                reviewListNode.replaceChildren(fragment);
+                return;
             }
 
-            overlay.hidden = false;
-            document.body.classList.add("overflow-hidden");
-
-            resetReviewForm(attractionId);
-            loadReviews(attractionId);
-            closeButton?.focus();
+            renderReviewFallback(reviews);
         };
 
         const closeWidget = () => {
+            const overlay = getOverlay();
             if (!overlay) {
                 return;
             }
 
             overlay.hidden = true;
             document.body.classList.remove("overflow-hidden");
+            getHomePage()?.classList.remove("is-attraction-widget-open");
             setReviewStatus("");
+            currentAttractionId = null;
         };
 
-        overlay?.addEventListener("click", (event) => {
-            if (event.target === overlay) {
-                closeWidget();
+        const fetchAndRenderReviews = async (attractionId) => {
+            const reviewListNode = getReviewListNode();
+            if (!reviewListNode || !attractionId) {
+                return;
             }
-        });
 
-        closeButton?.addEventListener("click", closeWidget);
+            const token = window.getToken?.();
+            const headers = {
+                "Accept": "application/json",
+                ...(token ? { "Authorization": `Bearer ${token}` } : {})
+            };
 
-        document.addEventListener("keydown", (event) => {
-            if (event.key === "Escape" && overlay && !overlay.hidden) {
-                closeWidget();
+            try {
+                const response = await fetch(`/api/reviews/${attractionId}`, { headers });
+                if (!response.ok) {
+                    throw new Error("Unable to load reviews right now.");
+                }
+
+                const reviews = await response.json();
+                if (currentAttractionId !== attractionId) {
+                    return;
+                }
+
+                renderReviews(reviews ?? []);
+            } catch (error) {
+                if (currentAttractionId !== attractionId) {
+                    return;
+                }
+
+                renderReviews([]);
+                setReviewStatus(error.message || "Unable to load reviews right now.", true);
             }
-        });
+        };
 
-        getReviewForm()?.addEventListener("submit", async (event) => {
+        const showReviewError = (message) => {
+            setReviewStatus(message, true);
+            getReviewTextInput()?.classList.add("is-invalid");
+        };
+
+        const clearReviewError = () => {
+            setReviewStatus("");
+            getReviewTextInput()?.classList.remove("is-invalid");
+        };
+
+        const resetReviewForm = () => {
+            const form = getReviewForm();
+            const textInput = getReviewTextInput();
+            const authMessage = getReviewAuthMessage();
+            const isLoggedIn = !!window.getToken?.();
+
+            form?.reset();
+
+            if (textInput) {
+                textInput.value = "";
+                textInput.classList.remove("is-invalid");
+            }
+
+            if (form) {
+                form.hidden = !isLoggedIn;
+            }
+
+            if (authMessage) {
+                authMessage.hidden = isLoggedIn;
+            }
+
+            updateCharacterCount();
+            clearReviewError();
+        };
+
+        const handleSubmitReview = async (event) => {
             event.preventDefault();
 
             const submitButton = getReviewSubmitButton();
-            const attractionIdInput = getReviewAttractionIdInput();
             const textInput = getReviewTextInput();
-            const ratingInput = getReviewRatingInput();
+            const content = textInput?.value?.trim() ?? "";
 
-            const attractionId = attractionIdInput?.value;
-            const reviewText = textInput?.value?.trim();
-            const rating = Number(ratingInput?.value ?? 0);
+            clearReviewError();
 
-            if (!attractionId || !reviewText || !rating) {
-                setReviewStatus("Please complete all review fields before submitting.", true);
+            if (!currentAttractionId) {
+                showReviewError("Missing attraction id.");
+                return;
+            }
+
+            if (!content) {
+                showReviewError("Review cannot be empty.");
+                return;
+            }
+
+            if (content.length > MAX_REVIEW_LENGTH) {
+                showReviewError(`Review must be ${MAX_REVIEW_LENGTH} characters or fewer.`);
+                return;
+            }
+
+            const token = window.getToken?.();
+            if (!token) {
+                showReviewError("Please sign in to leave a review.");
                 return;
             }
 
@@ -225,45 +256,362 @@
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "Accept": "application/json"
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({
-                        attractionId,
-                        rating,
-                        reviewText
+                        attractionId: currentAttractionId,
+                        content
                     })
                 });
 
-                if (response.status === 401) {
-                    setReviewStatus("Please sign in to leave a review.", true);
-                    return;
-                }
-
                 if (!response.ok) {
-                    const problem = await response.json().catch(() => null);
-                    const detail = problem?.detail || "We couldn't save your review right now.";
-                    throw new Error(detail);
+                    throw new Error("Failed to submit review. Please try again.");
                 }
 
                 if (textInput) {
                     textInput.value = "";
                 }
 
-                if (ratingInput) {
-                    ratingInput.value = "5";
-                }
-
-                setReviewStatus("Thanks! Your review was added.");
-                await loadReviews(attractionId);
+                updateCharacterCount();
+                clearReviewError();
+                await fetchAndRenderReviews(currentAttractionId);
             } catch (error) {
-                setReviewStatus(error.message || "We couldn't save your review right now.", true);
+                showReviewError(error.message || "An unexpected error occurred. Please try again.");
             } finally {
                 if (submitButton) {
                     submitButton.disabled = false;
                 }
             }
-        });
+        };
 
+        const handleEditReview = (article) => {
+            const contentPara = article.querySelector("[data-review-content]");
+            const actionsDiv = article.querySelector("[data-review-actions]");
+            if (!contentPara) {
+                return;
+            }
+
+            const originalContent = contentPara.textContent ?? "";
+
+            contentPara.hidden = true;
+            if (actionsDiv) {
+                actionsDiv.hidden = true;
+            }
+
+            const editContainer = document.createElement("div");
+            editContainer.dataset.editContainer = "";
+            editContainer.innerHTML = `
+                <textarea class="form-control review-textarea mt-1"
+                          rows="3"
+                          maxlength="2000"
+                          data-edit-textarea></textarea>
+                <div class="d-flex justify-content-between align-items-center mt-1">
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-link btn-sm p-0" data-review-action="save">Save</button>
+                        <button type="button" class="btn btn-link btn-sm p-0" data-review-action="cancel">Cancel</button>
+                    </div>
+                    <span class="small text-secondary" data-edit-counter>${originalContent.length}/2000</span>
+                </div>
+            `;
+
+            article.appendChild(editContainer);
+
+            const editTextarea = editContainer.querySelector("[data-edit-textarea]");
+            const editCounter = editContainer.querySelector("[data-edit-counter]");
+
+            if (editTextarea) {
+                editTextarea.value = originalContent;
+                editTextarea.addEventListener("input", () => {
+                    if (editCounter) {
+                        editCounter.textContent = `${editTextarea.value.length}/2000`;
+                    }
+                });
+                editTextarea.focus();
+                editTextarea.setSelectionRange(editTextarea.value.length, editTextarea.value.length);
+            }
+        };
+
+        const handleSaveEdit = async (article, reviewId) => {
+            const editTextarea = article.querySelector("[data-edit-textarea]");
+            if (!editTextarea || !currentAttractionId) {
+                return;
+            }
+
+            const content = editTextarea.value.trim();
+            if (!content) {
+                return;
+            }
+
+            const token = window.getToken?.();
+            if (!token) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/reviews/${reviewId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ content })
+                });
+
+                if (!response.ok) {
+                    return;
+                }
+
+                await fetchAndRenderReviews(currentAttractionId);
+            } catch {
+            }
+        };
+
+        const handleCancelEdit = (article) => {
+            const contentPara = article.querySelector("[data-review-content]");
+            const actionsDiv = article.querySelector("[data-review-actions]");
+            const editContainer = article.querySelector("[data-edit-container]");
+
+            if (contentPara) {
+                contentPara.hidden = false;
+            }
+
+            if (actionsDiv) {
+                actionsDiv.hidden = false;
+            }
+
+            if (editContainer) {
+                editContainer.remove();
+            }
+        };
+
+        const handleDeleteReview = async (reviewId) => {
+            if (!currentAttractionId) {
+                return;
+            }
+
+            const token = window.getToken?.();
+            if (!token) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/reviews/${reviewId}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    return;
+                }
+
+                await fetchAndRenderReviews(currentAttractionId);
+            } catch {
+            }
+        };
+
+        const handleRate = async (attractionId, value) => {
+            const token = window.getToken?.();
+            if (!token) {
+                throw new Error("not authenticated");
+            }
+
+            const response = await fetch("/api/ratings", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ attractionId, value })
+            });
+
+            if (!response.ok) {
+                throw new Error(`POST failed: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const ratingNode = getRatingNode();
+            if (!ratingNode || currentAttractionId !== attractionId) {
+                return;
+            }
+
+            ratingNode.innerHTML = window.renderInteractiveStarRating?.({
+                attractionId,
+                average: data.newAverage,
+                count: data.newCount,
+                userRating: data.value,
+                interactive: true
+            }) ?? "";
+
+            const container = ratingNode.firstElementChild;
+            if (container) {
+                window.bindInteractiveStarRating?.(container, (v) => handleRate(attractionId, v));
+            }
+
+            const panelRating = document.querySelector(`[data-rating-container="${attractionId}"]`);
+            if (panelRating) {
+                panelRating.innerHTML = window.renderHomepageStarRating?.(data.newAverage) ?? "";
+            }
+        };
+
+        const fetchAndRenderRating = async (attractionId, initialAverage) => {
+            const token = window.getToken?.();
+            const headers = token ? { "Authorization": `Bearer ${token}` } : {};
+
+            try {
+                const response = await fetch(`/api/ratings/${attractionId}/mine`, { headers });
+                if (!response.ok) {
+                    return;
+                }
+
+                const data = await response.json();
+                const ratingNode = getRatingNode();
+                if (!ratingNode || currentAttractionId !== attractionId) {
+                    return;
+                }
+
+                const isLoggedIn = !!token;
+                ratingNode.innerHTML = window.renderInteractiveStarRating?.({
+                    attractionId,
+                    average: data.average ?? initialAverage,
+                    count: data.count,
+                    userRating: data.value,
+                    interactive: isLoggedIn
+                }) ?? "";
+
+                if (isLoggedIn) {
+                    const container = ratingNode.firstElementChild;
+                    if (container) {
+                        window.bindInteractiveStarRating?.(container, (v) => handleRate(attractionId, v));
+                    }
+                }
+            } catch {
+            }
+        };
+
+        const openWidget = ({ parkTitle, parkLocation, attractionTitle, attractionSubtitle, attractionRating, attractionId, attractionImageUrl }) => {
+            const overlay = getOverlay();
+            const dialog = getDialog();
+            const parkNode = getParkNode();
+            const titleNode = getTitleNode();
+            const ratingNode = getRatingNode();
+            const subtitleNode = getSubtitleNode();
+            const imageNode = getImageNode();
+            const reviewListNode = getReviewListNode();
+
+            if (!overlay || !dialog || !parkNode || !titleNode || !ratingNode || !subtitleNode || !reviewListNode) {
+                return;
+            }
+
+            currentAttractionId = attractionId;
+
+            parkNode.textContent = `${parkTitle} • ${parkLocation}`;
+            titleNode.textContent = attractionTitle;
+            subtitleNode.textContent = attractionSubtitle ?? "";
+
+            if (imageNode) {
+                if (attractionImageUrl) {
+                    imageNode.src = attractionImageUrl;
+                    imageNode.alt = attractionTitle;
+                    imageNode.hidden = false;
+                } else {
+                    imageNode.src = "";
+                    imageNode.alt = "";
+                    imageNode.hidden = true;
+                }
+            }
+
+            ratingNode.innerHTML = window.renderInteractiveStarRating?.({
+                attractionId,
+                average: attractionRating,
+                count: null,
+                userRating: null,
+                interactive: false
+            }) ?? "";
+
+            const loadingP = document.createElement("p");
+            loadingP.className = "small text-secondary mb-0";
+            loadingP.textContent = "Loading reviews…";
+            reviewListNode.replaceChildren(loadingP);
+
+            overlay.hidden = false;
+            document.body.classList.add("overflow-hidden");
+            getHomePage()?.classList.add("is-attraction-widget-open");
+
+            resetReviewForm();
+            fetchAndRenderRating(attractionId, attractionRating);
+            fetchAndRenderReviews(attractionId);
+            getCloseButton()?.focus();
+        };
+
+        const bindWidgetInteractions = () => {
+            const overlay = getOverlay();
+            const closeButton = getCloseButton();
+            const reviewForm = getReviewForm();
+            const reviewListNode = getReviewListNode();
+            const reviewInput = getReviewTextInput();
+            const submitButton = getReviewSubmitButton();
+
+            if (overlay && closeButton) {
+                closeButton.addEventListener("click", closeWidget);
+
+                overlay.addEventListener("click", (event) => {
+                    if (event.target === overlay) {
+                        closeWidget();
+                    }
+                });
+
+                document.addEventListener("keydown", (event) => {
+                    if (event.key === "Escape" && !overlay.hidden) {
+                        closeWidget();
+                    }
+                });
+            }
+
+            reviewInput?.addEventListener("input", () => {
+                updateCharacterCount();
+                if (reviewInput.value.trim().length > 0) {
+                    clearReviewError();
+                }
+            });
+
+            reviewForm?.addEventListener("submit", handleSubmitReview);
+            submitButton?.addEventListener("click", (event) => {
+                reviewForm?.requestSubmit();
+            });
+
+            reviewListNode?.addEventListener("click", (event) => {
+                const button = event.target.closest("[data-review-action]");
+                if (!button) {
+                    return;
+                }
+
+                const action = button.getAttribute("data-review-action");
+                const article = button.closest("article[data-review-id]");
+                if (!article) {
+                    return;
+                }
+
+                const reviewId = article.getAttribute("data-review-id");
+                if (!reviewId) {
+                    return;
+                }
+
+                if (action === "edit") {
+                    handleEditReview(article);
+                } else if (action === "delete") {
+                    handleDeleteReview(reviewId);
+                } else if (action === "save") {
+                    handleSaveEdit(article, reviewId);
+                } else if (action === "cancel") {
+                    handleCancelEdit(article);
+                }
+            });
+        };
+
+        bindWidgetInteractions();
+        closeWidget();
         window.openHomepageAttractionWidget = openWidget;
         window.closeHomepageAttractionWidget = closeWidget;
     })();
