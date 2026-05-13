@@ -30,6 +30,7 @@ public sealed class AttractionViewModel
     public required string Title { get; init; }
     public required string Subtitle { get; init; }
     public required double Rating { get; init; }
+    public string? ImageUrl { get; init; }
     public required CoordinateViewModel Coordinates { get; init; }
     public required IReadOnlyList<AttractionReviewViewModel> Reviews { get; init; }
 }
