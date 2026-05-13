@@ -38,18 +38,22 @@ public sealed class IndexContentService(IConfiguration configuration, HttpClient
                 Attractions = attractionsByPark.TryGetValue(p.Id, out var parkAttractions)
                     ? parkAttractions.Select(a =>
                     {
-                        string? firstImageUrl = null;
+                        var galleryUrls = new List<string>();
 
                         if (!string.IsNullOrWhiteSpace(a.ImageUrls))
                         {
                             try
                             {
-                                var imagePaths = JsonSerializer.Deserialize<List<string>>(a.ImageUrls);
-                                var firstPath = imagePaths?.FirstOrDefault();
+                                var imagePaths = JsonSerializer.Deserialize<List<string>>(a.ImageUrls) ?? [];
 
-                                if (!string.IsNullOrWhiteSpace(firstPath))
+                                foreach (var rawPath in imagePaths)
                                 {
-                                    var normalizedPath = firstPath.Trim();
+                                    if (string.IsNullOrWhiteSpace(rawPath))
+                                    {
+                                        continue;
+                                    }
+
+                                    var normalizedPath = rawPath.Trim();
 
                                     const string apiPrefix = "/api/attractions/image/";
                                     if (normalizedPath.StartsWith(apiPrefix, StringComparison.OrdinalIgnoreCase))
@@ -59,12 +63,12 @@ public sealed class IndexContentService(IConfiguration configuration, HttpClient
 
                                     normalizedPath = normalizedPath.TrimStart('/');
 
-                                    firstImageUrl = $"/Images/{normalizedPath}";
+                                    galleryUrls.Add($"/Images/{normalizedPath}");
                                 }
                             }
                             catch
                             {
-                                firstImageUrl = null;
+                                galleryUrls = [];
                             }
                         }
 
@@ -74,7 +78,8 @@ public sealed class IndexContentService(IConfiguration configuration, HttpClient
                             Title = a.Name,
                             Subtitle = a.Description ?? string.Empty,
                             Rating = (double)a.AvgRating,
-                            ImageUrl = firstImageUrl,
+                            ImageUrl = galleryUrls.FirstOrDefault(),
+                            ImageUrls = galleryUrls,
                             Coordinates = new CoordinateViewModel
                             {
                                 Lng = (double)(a.Lng ?? 0),

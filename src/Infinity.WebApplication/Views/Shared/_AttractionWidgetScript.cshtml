@@ -10,6 +10,14 @@
         const getCloseButton = () => document.getElementById("attraction-widget-close");
         const getHomePage = () => document.querySelector(".home-page");
 
+        const getGalleryToggle = () => document.getElementById("attraction-gallery-toggle");
+        const getGalleryPanel = () => document.getElementById("attraction-gallery-panel");
+        const getGalleryImage = () => document.getElementById("attraction-gallery-image");
+        const getGalleryMeta = () => document.getElementById("attraction-gallery-meta");
+        const getGalleryPrev = () => document.getElementById("attraction-gallery-prev");
+        const getGalleryNext = () => document.getElementById("attraction-gallery-next");
+        const getGalleryShuffle = () => document.getElementById("attraction-gallery-shuffle");
+
         const getReviewListNode = () => document.getElementById("attraction-widget-reviews-list");
         const getReviewStatusNode = () => document.getElementById("reviewError");
         const getReviewForm = () => document.getElementById("attraction-widget-review-form");
@@ -20,6 +28,8 @@
 
         const MAX_REVIEW_LENGTH = 2000;
         let currentAttractionId = null;
+        let currentGalleryImages = [];
+        let currentGalleryIndex = 0;
 
         const setReviewStatus = (message, isError = false) => {
             const statusNode = getReviewStatusNode();
@@ -43,7 +53,50 @@
             counter.textContent = `${input.value.length}/${MAX_REVIEW_LENGTH}`;
         };
 
-        const setReviewMeta = (reviews) => {
+        const renderGalleryImage = () => {
+            const panel = getGalleryPanel();
+            const image = getGalleryImage();
+            const meta = getGalleryMeta();
+
+            if (!panel || !image || !meta) {
+                return;
+            }
+
+            if (!currentGalleryImages.length) {
+                panel.hidden = true;
+                return;
+            }
+
+            const currentImage = currentGalleryImages[currentGalleryIndex];
+            image.src = currentImage;
+            image.alt = `Gallery image ${currentGalleryIndex + 1}`;
+            meta.textContent = `${currentGalleryIndex + 1} of ${currentGalleryImages.length}`;
+        };
+
+        const setupGallery = (imageUrls, attractionTitle) => {
+            const toggle = getGalleryToggle();
+            const panel = getGalleryPanel();
+            const image = getGalleryImage();
+
+            currentGalleryImages = Array.isArray(imageUrls) ? imageUrls.filter(Boolean) : [];
+            currentGalleryIndex = 0;
+
+            if (!toggle || !panel || !image) {
+                return;
+            }
+
+            if (currentGalleryImages.length <= 1) {
+                toggle.hidden = true;
+                panel.hidden = true;
+                return;
+            }
+
+            toggle.hidden = false;
+            toggle.textContent = `Open photo gallery (${currentGalleryImages.length})`;
+
+            panel.hidden = true;
+            image.alt = attractionTitle ?? "Attraction gallery image";
+            renderGalleryImage();
         };
 
         const renderReviewFallback = (reviews) => {
@@ -121,8 +174,6 @@
             if (!reviewListNode) {
                 return;
             }
-
-            setReviewMeta(reviews);
 
             if (typeof window.renderHomepageAttractionReviews === "function") {
                 const fragment = window.renderHomepageAttractionReviews(reviews);
@@ -284,133 +335,6 @@
             }
         };
 
-        const handleEditReview = (article) => {
-            const contentPara = article.querySelector("[data-review-content]");
-            const actionsDiv = article.querySelector("[data-review-actions]");
-            if (!contentPara) {
-                return;
-            }
-
-            const originalContent = contentPara.textContent ?? "";
-
-            contentPara.hidden = true;
-            if (actionsDiv) {
-                actionsDiv.hidden = true;
-            }
-
-            const editContainer = document.createElement("div");
-            editContainer.dataset.editContainer = "";
-            editContainer.innerHTML = `
-                <textarea class="form-control review-textarea mt-1"
-                          rows="3"
-                          maxlength="2000"
-                          data-edit-textarea></textarea>
-                <div class="d-flex justify-content-between align-items-center mt-1">
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-link btn-sm p-0" data-review-action="save">Save</button>
-                        <button type="button" class="btn btn-link btn-sm p-0" data-review-action="cancel">Cancel</button>
-                    </div>
-                    <span class="small text-secondary" data-edit-counter>${originalContent.length}/2000</span>
-                </div>
-            `;
-
-            article.appendChild(editContainer);
-
-            const editTextarea = editContainer.querySelector("[data-edit-textarea]");
-            const editCounter = editContainer.querySelector("[data-edit-counter]");
-
-            if (editTextarea) {
-                editTextarea.value = originalContent;
-                editTextarea.addEventListener("input", () => {
-                    if (editCounter) {
-                        editCounter.textContent = `${editTextarea.value.length}/2000`;
-                    }
-                });
-                editTextarea.focus();
-                editTextarea.setSelectionRange(editTextarea.value.length, editTextarea.value.length);
-            }
-        };
-
-        const handleSaveEdit = async (article, reviewId) => {
-            const editTextarea = article.querySelector("[data-edit-textarea]");
-            if (!editTextarea || !currentAttractionId) {
-                return;
-            }
-
-            const content = editTextarea.value.trim();
-            if (!content) {
-                return;
-            }
-
-            const token = window.getToken?.();
-            if (!token) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/reviews/${reviewId}`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ content })
-                });
-
-                if (!response.ok) {
-                    return;
-                }
-
-                await fetchAndRenderReviews(currentAttractionId);
-            } catch {
-            }
-        };
-
-        const handleCancelEdit = (article) => {
-            const contentPara = article.querySelector("[data-review-content]");
-            const actionsDiv = article.querySelector("[data-review-actions]");
-            const editContainer = article.querySelector("[data-edit-container]");
-
-            if (contentPara) {
-                contentPara.hidden = false;
-            }
-
-            if (actionsDiv) {
-                actionsDiv.hidden = false;
-            }
-
-            if (editContainer) {
-                editContainer.remove();
-            }
-        };
-
-        const handleDeleteReview = async (reviewId) => {
-            if (!currentAttractionId) {
-                return;
-            }
-
-            const token = window.getToken?.();
-            if (!token) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/reviews/${reviewId}`, {
-                    method: "DELETE",
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    return;
-                }
-
-                await fetchAndRenderReviews(currentAttractionId);
-            } catch {
-            }
-        };
-
         const handleRate = async (attractionId, value) => {
             const token = window.getToken?.();
             if (!token) {
@@ -490,7 +414,16 @@
             }
         };
 
-        const openWidget = ({ parkTitle, parkLocation, attractionTitle, attractionSubtitle, attractionRating, attractionId, attractionImageUrl }) => {
+        const openWidget = ({
+                                parkTitle,
+                                parkLocation,
+                                attractionTitle,
+                                attractionSubtitle,
+                                attractionRating,
+                                attractionId,
+                                attractionImageUrl,
+                                attractionImageUrls
+                            }) => {
             const overlay = getOverlay();
             const dialog = getDialog();
             const parkNode = getParkNode();
@@ -522,6 +455,8 @@
                 }
             }
 
+            setupGallery(attractionImageUrls, attractionTitle);
+
             ratingNode.innerHTML = window.renderInteractiveStarRating?.({
                 attractionId,
                 average: attractionRating,
@@ -552,6 +487,11 @@
             const reviewListNode = getReviewListNode();
             const reviewInput = getReviewTextInput();
             const submitButton = getReviewSubmitButton();
+            const galleryToggle = getGalleryToggle();
+            const galleryPanel = getGalleryPanel();
+            const galleryPrev = getGalleryPrev();
+            const galleryNext = getGalleryNext();
+            const galleryShuffle = getGalleryShuffle();
 
             if (overlay && closeButton) {
                 closeButton.addEventListener("click", closeWidget);
@@ -577,8 +517,56 @@
             });
 
             reviewForm?.addEventListener("submit", handleSubmitReview);
-            submitButton?.addEventListener("click", (event) => {
+            submitButton?.addEventListener("click", () => {
                 reviewForm?.requestSubmit();
+            });
+
+            galleryToggle?.addEventListener("click", () => {
+                if (!galleryPanel) {
+                    return;
+                }
+
+                const willOpen = galleryPanel.hidden;
+                galleryPanel.hidden = !willOpen;
+                galleryToggle.textContent = willOpen
+                    ? "Close photo gallery"
+                    : `Open photo gallery (${currentGalleryImages.length})`;
+
+                if (willOpen) {
+                    renderGalleryImage();
+                }
+            });
+
+            galleryPrev?.addEventListener("click", () => {
+                if (!currentGalleryImages.length) {
+                    return;
+                }
+
+                currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
+                renderGalleryImage();
+            });
+
+            galleryNext?.addEventListener("click", () => {
+                if (!currentGalleryImages.length) {
+                    return;
+                }
+
+                currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
+                renderGalleryImage();
+            });
+
+            galleryShuffle?.addEventListener("click", () => {
+                if (currentGalleryImages.length <= 1) {
+                    return;
+                }
+
+                let nextIndex = currentGalleryIndex;
+                while (nextIndex === currentGalleryIndex) {
+                    nextIndex = Math.floor(Math.random() * currentGalleryImages.length);
+                }
+
+                currentGalleryIndex = nextIndex;
+                renderGalleryImage();
             });
 
             reviewListNode?.addEventListener("click", (event) => {
@@ -598,14 +586,7 @@
                     return;
                 }
 
-                if (action === "edit") {
-                    handleEditReview(article);
-                } else if (action === "delete") {
-                    handleDeleteReview(reviewId);
-                } else if (action === "save") {
-                    handleSaveEdit(article, reviewId);
-                } else if (action === "cancel") {
-                    handleCancelEdit(article);
+                if (action === "delete") {
                 }
             });
         };
