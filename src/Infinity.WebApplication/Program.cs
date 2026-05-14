@@ -6,6 +6,7 @@ using Infinity.WebApplication.Services.RatingService;
 using Infinity.WebApplication.Services.ReviewService;
 using Infinity.WebApplication.Services.UserService;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +31,18 @@ builder.Services.AddHttpClient("InfinityApi", client =>
         ?? throw new InvalidOperationException("InfinityApi:BaseUrl is not configured."));
 })
 .AddHttpMessageHandler<ServiceTokenHandler>();
+
+builder.Services.AddHttpClient("PokemonApi", (sp, client) =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var baseUrl = config["PokemonApi:BaseUrl"]
+                  ?? throw new InvalidOperationException("PokemonApi:BaseUrl is not configured.");
+    var token = config["PokemonApi:BearerToken"]
+                ?? throw new InvalidOperationException("PokemonApi:BearerToken is not configured.");
+
+    client.BaseAddress = new Uri(baseUrl);
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+});
 
 builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("UserConnection")

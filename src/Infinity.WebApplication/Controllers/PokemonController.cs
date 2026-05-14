@@ -11,12 +11,12 @@ public sealed class PokemonController(IHttpClientFactory httpClientFactory) : Co
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<PokemonOptionDto>>> GetAll(CancellationToken cancellationToken)
     {
-        var client = httpClientFactory.CreateClient("InfinityApi");
-        var endpoint = new Uri(client.BaseAddress!, "api/pokemon");
+        var client = httpClientFactory.CreateClient("PokemonApi");
+        var endpoint = new Uri(client.BaseAddress!, "pokemon");
 
         try
         {
-            var response = await client.GetAsync("api/pokemon", cancellationToken);
+            var response = await client.GetAsync("pokemon", cancellationToken);
             var responseText = await response.Content.ReadAsStringAsync(cancellationToken);
 
             if (!response.IsSuccessStatusCode)
@@ -30,16 +30,16 @@ public sealed class PokemonController(IHttpClientFactory httpClientFactory) : Co
                 });
             }
 
-            var pokemon = await response.Content.ReadFromJsonAsync<List<PokemonOptionDto>>(
+            var result = await response.Content.ReadFromJsonAsync<PokemonListResponse>(
                 cancellationToken: cancellationToken);
 
-            return Ok((pokemon ?? []).OrderBy(p => p.Id).ToList());
+            return Ok((result?.Pokemon ?? []).OrderBy(p => p.Id).ToList());
         }
         catch (Exception ex)
         {
             return StatusCode(500, new
             {
-                error = "The Pokémon proxy failed.",
+                error = "The Pokémon request failed.",
                 attemptedEndpoint = endpoint.ToString(),
                 exception = ex.Message
             });
