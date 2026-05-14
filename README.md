@@ -10,6 +10,12 @@ attraction search & filter.
 
 Created for the Software Engineering Capstone course at Chapman University.
 
+### Pokemon Sounds??
+
+This project also includes a horrendous yet hilarious integration with the class' resident
+[Pokemon Sounds API](https://github.com/HBnax/se-498), allowing users to listen to Pokemon
+cries singing the star wars main theme across the site.
+
 ## Technology Stack
 
 ### Backend & API
@@ -48,7 +54,7 @@ Created for the Software Engineering Capstone course at Chapman University.
 - **Containerization:** Docker (Podman-compatible)
 - **Orchestration:** Docker Compose/Podman Compose
 - **Networking:** Custom bridge networks for service isolation
-- **Port Mapping:** API (8080), Web App (8082), Databases (5432/5433)
+- **Port Mapping:** API (8084), Web App (8082), Databases (5434/5433)
 
 ### Development & DevOps
 
@@ -64,7 +70,7 @@ This project implements a microservices-oriented architecture:
 ```
 ┌──────────────────────────────────┐         ┌──────────────────────────────┐
 │ Infinity.WebApplication          │         │ Infinity.WebApi              │
-│ (ASP.NET Core MVC - Port 8082)   │         │ (ASP.NET Core API - 8080)    │
+│ (ASP.NET Core MVC - Port 8082)   │         │ (ASP.NET Core API - 8084)    │
 │ ├── Controllers (Page routing)   │         │ ├── Controllers (OpenAPI)    │
 │ ├── Services (Business logic)    │ HTTP    │ ├── Services (Domain logic)  │
 │ ├── Views (Razor templates)      │◄──────► │ ├── Data (Entity Framework)  │
@@ -77,7 +83,7 @@ This project implements a microservices-oriented architecture:
              ↓                                      ↓
     ┌────────────────────────┐          ┌────────────────────────┐
     │ Users Database         │          │ Attractions Database   │
-    │ (PostgreSQL on 5433)   │          │ (PostgreSQL on 5432)   │
+    │ (PostgreSQL on 5433)   │          │ (PostgreSQL on 5434)   │
     │ - User accounts        │          │ - Theme parks          │
     │ - JWT sessions         │          │ - Attractions          │
     │ - Ratings & Reviews    │          │ - Images               │
@@ -92,32 +98,6 @@ This project implements a microservices-oriented architecture:
 - **Repository Pattern:** Data access abstraction via Entity Framework DbContext
 - **JWT-based Authentication:** Stateless auth across microservices with bearer tokens
 
-## Project Structure
-
-```
-Infinity.WebApi/                    # REST API backend
-├── Controllers/                    # Endpoint handlers (Parks, Attractions, Images)
-├── Services/                       # Business logic layer
-├── Data/                           # Entity Framework context & seeders
-├── Models/                         # DTOs and domain entities
-├── Migrations/                     # Database schema versions
-└── Program.cs                      # Dependency injection & pipeline config
-
-Infinity.WebApplication/            # MVC web application
-├── Controllers/                    # Page routing
-├── Services/                       # API integration, auth, ratings, reviews
-├── Views/                          # Razor templates
-├── Models/                         # ViewModels
-├── wwwroot/                        # Static assets (CSS, JS, images)
-├── Data/                           # User DbContext
-└── Program.cs                      # Service registration & middleware
-
-Infinity.*.Tests/                   # Test suites
-├── Controllers/                    # Controller unit tests
-├── Services/                       # Service layer tests
-└── [Feature].Tests.cs              # XUnit test classes with Moq
-```
-
 ## Quick Start
 
 ### Prerequisites
@@ -127,35 +107,30 @@ Infinity.*.Tests/                   # Test suites
 ### Environment Setup
 
 Create a `.env` file in `/src`:
-
 ```env
 # Mapbox integration
 MAPBOX_ACCESS_TOKEN=your_mapbox_access_token_here
 
 # JWT signing key for API authentication (any 32 character string)
 JWT_SIGNING_KEY=your_jwt_signing_key_here_must_be_32_chars_or_longer
+
+# Pokemon Sounds API Bearer token (can be any string)
+BearerToken=your_api_bearer_token_here
 ```
 
 ### Build & Run
 
+First, run the Pokemon API, then start this application:
 ```bash
 cd src/
 podman compose up --build
 ```
 
 This starts the four containerized services:
-- **Infinity API** (`localhost:8080`) - REST API with Swagger docs
+- **Infinity API** (`localhost:8084`) - REST API with Swagger docs
 - **Infinity Web App** (`localhost:8082`) - User-facing web interface
-- **Attractions Database** (PostgreSQL on 5432) - Parks, rides, amenities
+- **Attractions Database** (PostgreSQL on 5434) - Parks, rides, amenities
 - **Users Database** (PostgreSQL on 5433) - Accounts, ratings, reviews
-
-### Access Points
-
-| Service | URL | Purpose |
-|---------|-----|---------|
-| Web App | `http://localhost:8082` | Main user interface |
-| API Docs | `http://localhost:8080/swagger/index.html` | Interactive API reference |
-| API Base | `http://localhost:8080/api` | REST endpoints |
 
 ## Key Features Implemented
 
@@ -184,7 +159,7 @@ This starts the four containerized services:
 
 The project maintains high code quality through:
 
-- **Unit Tests:** 90%+ controller and service coverage with XUnit
+- **Unit Tests:** Controller and service tests with XUnit
 - **Integration Tests:** Database-level testing with InMemory provider
 - **Mocking:** Moq for dependency isolation
 - **CI/CD Pipeline:** Automated tests on every commit
@@ -192,8 +167,8 @@ The project maintains high code quality through:
 
 ## Future Enhancements
 
-- Mobile-native applications (iOS/Android)
-- User-generated photo uploads
-- Real-time crowd forecasting
+- Mobile applications (iOS/Android)
+- User photo uploads
+- Crowd forecasting
 - Administrator dashboard for attraction management and review moderation
 - Advanced analytics dashboard
