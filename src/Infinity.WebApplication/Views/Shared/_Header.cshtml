@@ -247,11 +247,20 @@
                         cry: selectedOption.dataset.cry
                     };
 
-                    setStatus(`Selected ${selectedOption.textContent}`);
-
                     window.dispatchEvent(new CustomEvent("pokemon:selected", {
                         detail: selectedPokemon
                     }));
+                });
+
+                window.addEventListener("pokemon:selected", async (event) => {
+                    const { name } = event.detail;
+                    setStatus(`Swapping to ${name}…`);
+                    try {
+                        await window.Pitchamon?.swapCry(`/api/pokemon/${name}/cry`);
+                        setStatus(`Now singing as ${name}!`);
+                    } catch (error) {
+                        setStatus(`Could not load cry for ${name}.`);
+                    }
                 });
             });
         })();

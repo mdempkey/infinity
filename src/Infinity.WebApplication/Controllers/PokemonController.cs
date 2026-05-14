@@ -45,4 +45,29 @@ public sealed class PokemonController(IHttpClientFactory httpClientFactory) : Co
             });
         }
     }
+
+    [HttpGet("{name}/cry")]
+    public async Task<IActionResult> GetCry(string name, CancellationToken cancellationToken)
+    {
+        var client = httpClientFactory.CreateClient("PokemonApi");
+
+        try
+        {
+            using var response = await client.GetAsync($"pokemon/{name}/cry", cancellationToken);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return NotFound();
+
+            if (!response.IsSuccessStatusCode)
+                return StatusCode(502);
+
+            var contentType = response.Content.Headers.ContentType?.MediaType ?? "audio/wav";
+            var bytes = await response.Content.ReadAsByteArrayAsync(cancellationToken);
+            return File(bytes, contentType);
+        }
+        catch (Exception)
+        {
+            return StatusCode(502);
+        }
+    }
 }
